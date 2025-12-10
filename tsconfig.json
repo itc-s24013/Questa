@@ -1,0 +1,31 @@
+{
+  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "allowImportingTsExtensions": false,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}
+
+
+//{
+//
+//  "compilerOptions": {
+//    "target": "ESNext",
+//    "moduleResolution": "NodeNext",
+//    "forceConsistentCasingInFileNames": true,
+//    "strict": true,
+//    "allowImportingTsExtensions": false,
+//    "outDir": "dist",
+//    "rootDir": "./src"
+//  },
+//  "include": ["src"]
+//}

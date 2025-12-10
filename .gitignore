@@ -11,3 +11,5 @@ yarn-error.log*
 
 .idea
 .env
+
+/generated/prisma
