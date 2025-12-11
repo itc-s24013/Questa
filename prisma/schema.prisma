@@ -16,10 +16,53 @@ datasource db {
 model User {
   id         String   @id @default(uuid(7)) @db.VarChar(36)
   email      String   @unique @db.VarChar(256)
+  name       String   @db.VarChar(128)
   password   String   @db.VarChar(128)
   my_point   String   @db.VarChar(128)
   is_admin   Boolean  @default(false)
   is_deleted Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Badge {
+  id          String  @id @default(uuid(7)) @db.VarChar(36)
+  name        String  @db.VarChar(128)
+  badge_image String  @db.VarChar(256)
+  rarity      Int // レア度
+  is_deleted  Boolean @default(false)
+}
+
+model Quest {
+  id         String  @id @default(uuid(7)) @db.VarChar(36)
+  title      String  @db.VarChar(128)
+  choice1    String  @db.VarChar(512)
+  choice2    String  @db.VarChar(512)
+  choice3    String  @db.VarChar(512)
+  choice4    String  @db.VarChar(512)
+  point      Int
+  is_deleted Boolean @default(false)
+}
+
+// ユーザが持っているバッジ (BagdeとUserの中間テーブル)
+model Collect {
+  id       String @id @default(uuid(7)) @db.VarChar(36)
+  badge_id String @db.VarChar(36)
+  badge    Badge  @relation(fields: [badge_id], references: [id])
+  user_id  String @db.VarChar(36)
+  user     User   @relation(fields: [user_id], references: [id])
+}
+
+// ユーザがクリアしたクエスト (QuestとUserの中間テーブル)
+model Clear {
+  id       String @id @default(uuid(7)) @db.VarChar(36)
+  user_id  String @db.VarChar(36)
+  quest_id String @db.VarChar(36)
+}
+
+// ガチャの出現確率
+model Scope {
+  rarity      Int   @unique
+  badge       Badge @relation(fields: [rarity], references: [rarity])
+  probability Int   @unique // 確率
 }
