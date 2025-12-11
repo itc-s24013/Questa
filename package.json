@@ -1,23 +1,28 @@
 {
-  "name": "Questa",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "dist/app.js",
-  "scripts": {
-    "start": "node dist/app.js",
-    "build": "tsc"
-  },
+	"name": "Questa",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"main": "dist/app.js",
+	"scripts": {
+		"start": "node dist/app.js",
+		"build": "tsc"
+	},
 	"devDependencies": {
 		"@tsconfig/node-lts": "^24.0.0",
 		"@types/express": "^5.0.6",
 		"@types/node": "^24.10.2",
+		"@types/passport": "^1.0.17",
+		"@types/passport-local": "^1.0.38",
 		"prisma": "^7.1.0",
 		"typescript": "^5.9.3"
 	},
-    "private": true,
+	"private": true,
 	"dependencies": {
 		"@prisma/client": "^7.1.0",
-		"express": "^5.2.1"
+		"argon2": "^0.44.0",
+		"express": "^5.2.1",
+		"passport": "^0.7.0",
+		"passport-local": "^1.0.0"
 	}
 }
