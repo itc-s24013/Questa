@@ -7,9 +7,5 @@ const app = express()
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
 
-const port = process.env.PORT || 3000
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
-})
 
 export default app
