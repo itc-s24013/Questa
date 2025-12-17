@@ -18,7 +18,7 @@ model User {
   email      String    @unique @db.VarChar(256)
   name       String    @db.VarChar(128)
   password   String    @db.VarChar(128)
-  my_point   String    @db.VarChar(128)
+  my_point   Int       @default(0)
   collects   Collect[]
   is_admin   Boolean   @default(false)
   is_deleted Boolean   @default(false)

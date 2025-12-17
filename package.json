@@ -6,7 +6,10 @@
 	"main": "dist/app.js",
 	"scripts": {
 		"start": "node dist/app.js",
-		"build": "tsc"
+        "dev": "pnpm run '/dev:.+/'",
+        "dev:tsx": "tsx --watch --watch-path=./src ./src/app.ts",
+        "check": "tsc --noEmit",
+        "build": "tsc"
 	},
 	"devDependencies": {
 		"@tsconfig/node-lts": "^24.0.0",
