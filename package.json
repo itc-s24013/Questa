@@ -6,10 +6,10 @@
 	"main": "dist/app.js",
 	"scripts": {
 		"start": "node dist/app.js",
-        "dev": "pnpm run '/dev:.+/'",
-        "dev:tsx": "tsx --watch --watch-path=./src ./src/app.ts",
-        "check": "tsc --noEmit",
-        "build": "tsc"
+		"dev": "pnpm run '/dev:.+/'",
+		"dev:tsx": "tsx --watch --watch-path=./src ./src/app.ts",
+		"check": "tsc --noEmit",
+		"build": "tsc"
 	},
 	"devDependencies": {
 		"@tsconfig/node-lts": "^24.0.0",
@@ -27,6 +27,7 @@
 		"@prisma/client": "^7.1.0",
 		"argon2": "^0.44.0",
 		"express": "^5.2.1",
+		"express-validator": "^7.3.1",
 		"passport": "^0.7.0",
 		"passport-local": "^1.0.0",
 		"pg": "^8.16.3"

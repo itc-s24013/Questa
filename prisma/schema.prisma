@@ -22,18 +22,18 @@ model User {
   collects   Collect[]
   is_admin   Boolean   @default(false)
   is_deleted Boolean   @default(false)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 model Badge {
-  id          String    @id @default(uuid(7)) @db.VarChar(36)
-  name        String    @db.VarChar(128)
-  badge_image String    @db.VarChar(256)
-  rarity      Int
-  scope       Scope     @relation(fields: [rarity], references: [rarity_list])
-  collects    Collect[]
-  is_deleted  Boolean   @default(false)
+  id              String    @id @default(uuid(7)) @db.VarChar(36)
+  name            String    @db.VarChar(128)
+  badge_image_url String    @db.VarChar(256)
+  rarity          Int
+  scope           Scope     @relation(fields: [rarity], references: [rarity_list])
+  collects        Collect[]
+  is_deleted      Boolean   @default(false)
 }
 
 model Quest {
