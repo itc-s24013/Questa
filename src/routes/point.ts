@@ -26,48 +26,42 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/judge", async (req, res) => {
-    const judge = Boolean(req.body.judge)
-    if (judge) {
-        try {
-            const getPoint = await prisma.quest.findUnique({
-                where: {
-                    id: req.body.quest_id
-                }
-            })
-            if (!getPoint) {
-                res.status(404).json({
-                    reason: '存在しないクエストです。'
-                })
-                return
+    const choice = req.body.choice
+    try {
+        const getQuest = await prisma.quest.findUnique({
+            where: {
+                id: req.body.quest_id
             }
-            const user = await prisma.user.update({
-                where: {
-                    id: req.body.id,
-                    is_deleted: false
-                },
-                data: {
-                    my_point: {
-                        increment: getPoint.point
+        })
+        if (!getQuest) {
+            res.status(404).json({
+                reason: '存在しないクエストです。'
+            })
+            return
+        }
+        if (choice === getQuest.choice4) {
+            try {
+                const user = await prisma.user.update({
+                    where: {
+                        id: req.body.id,
+                        is_deleted: false
+                    },
+                    data: {
+                        my_point: {
+                            increment: getQuest.point
+                        }
                     }
-                }
-            })
-            res.status(200).json({
-                point: user.my_point
-            })
+                })
+                res.status(200).json({
+                    point: user.my_point
+                })
+            } catch (e) {
+                res.json({reason: e})
+            }
         }
-        catch (e) {
-            res.json({reason: e})
-        }
+    } catch (e) {
+        res.json({reason: e})
     }
-    const user = await prisma.user.findUnique({
-        where: {
-            id: req.body.id,
-            is_deleted: false
-        }
-    })
-    res.status(200).json({
-        point: user ? user.my_point : "ログインをしてください"
-    })
 })
 
 export default router
