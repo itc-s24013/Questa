@@ -88,6 +88,9 @@ router.post("/sameBadge", async (req, res) => {
                     message: "被ったバッジはポイントに変換しました"
                 })
             }
+            res.status(200).json({
+                message: "新規バッジの獲得おめでとう！！！"
+            })
         }
         catch (e) {
             res.json({reason: e})
