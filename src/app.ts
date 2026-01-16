@@ -4,6 +4,7 @@ import express, {Request, Response} from 'express'
 import path from "path";
 // フロントバック分けて開発する場合に、異なるドメインからのアクセスを許可するために使用
 import cors from 'cors';
+
 import supabase from "./libs/supabase.js";
 
 import indexRouter from './routes/index.js'
@@ -11,6 +12,8 @@ import authRouter from './routes/auth.js'
 import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
 import pointRouter from './routes/point.js'
+import supabase from "./libs/supabase.js";
+// import {VerifyOtpParams} from "@supabase/supabase-js";
 
 const app = express()
 
