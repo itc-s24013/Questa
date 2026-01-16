@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,8 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -21,11 +13,11 @@ model User {
   name       String    @db.VarChar(128)
   password   String    @db.VarChar(128)
   my_point   Int       @default(0)
-  collects   Collect[]
   is_admin   Boolean   @default(false)
   is_deleted Boolean   @default(false)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  collects   Collect[]
 }
 
 model Badge {
@@ -33,9 +25,9 @@ model Badge {
   name            String    @db.VarChar(128)
   badge_image_url String    @db.VarChar(256)
   rarity          Int
+  is_deleted      Boolean   @default(false)
   scope           Scope     @relation(fields: [rarity], references: [rarity_list])
   collects        Collect[]
-  is_deleted      Boolean   @default(false)
 }
 
 model Quest {
@@ -49,25 +41,25 @@ model Quest {
   is_deleted Boolean @default(false)
 }
 
-// ユーザが持っているバッジ (BagdeとUserの中間テーブル)
 model Collect {
-  id       String @id @default(uuid(7)) @db.VarChar(36)
-  badge_id String @db.VarChar(36)
-  badge    Badge  @relation(fields: [badge_id], references: [id])
-  user_id  String @db.VarChar(36)
-  user     User   @relation(fields: [user_id], references: [id])
+  id        String  @id @default(uuid(7)) @db.VarChar(36)
+  badge_id  String  @db.VarChar(36)
+  user_id   String  @db.VarChar(36)
+  is_choice Boolean @default(false)
+  is_icon   Boolean @default(false)
+  badge     Badge   @relation(fields: [badge_id], references: [id])
+  user      User    @relation(fields: [user_id], references: [id])
 }
 
-// ユーザがクリアしたクエスト (QuestとUserの中間テーブル)
 model Clear {
   id       String @id @default(uuid(7)) @db.VarChar(36)
   user_id  String @db.VarChar(36)
   quest_id String @db.VarChar(36)
 }
 
-// ガチャの出現確率
 model Scope {
-  rarity_list Int     @unique
-  probability Int     @unique // 確率
-  badges      Badge[]
+  rarity_list Int    @unique
+  probability Int    @unique
+  badge_id    String @db.VarChar(36)
+  badge       Badge  @relation(fields: [badge_id], references: [id])
 }
