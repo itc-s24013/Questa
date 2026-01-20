@@ -47,4 +47,18 @@ router.get('/quests', async (req, res) => {
     }
 })
 
+router.get('/badges', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.badge.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
