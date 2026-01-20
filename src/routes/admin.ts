@@ -129,5 +129,22 @@ router.post('/badge/delete/:id', async (req, res) => {
     }
 })
 
+router.post('/badge/add', async (req, res) => {
+    try {
+        await prisma.badge.create({
+            data: {
+                name: req.body.name,
+                rarity: req.body.rarity,
+                badge_image_url: req.body.badge_image_url,
+            }
+        })
+        res.status(200).json({
+            message: "バッジを追加しました。"
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 
 export default router
