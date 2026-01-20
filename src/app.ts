@@ -9,6 +9,7 @@ import indexRouter from './routes/index.js'
 import authRouter from './routes/auth.js'
 import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
+import adminRouter from './routes/admin.js'
 import pointRouter from './routes/point.js'
 import supabase from "./libs/supabase.js";
 // import {VerifyOtpParams} from "@supabase/supabase-js";
@@ -58,6 +59,7 @@ app.listen(3000, () => {
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
 app.use('/quest', questRouter)
+app.use('/admin', adminRouter)
 app.use('/point', pointRouter)
 app.use('/', indexRouter)
 
