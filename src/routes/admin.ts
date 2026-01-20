@@ -79,6 +79,26 @@ router.post('/quest/delete/:id', async (req, res) => {
     }
 })
 
+router.post('/quest/add', async (req, res) => {
+    try {
+        await prisma.quest.create({
+            data: {
+                title: req.body.title,
+                choice1: req.body.choice1,
+                choice2: req.body.choice2,
+                choice3: req.body.choice3,
+                choice4: req.body.choice4,
+                point: req.body.point,
+            }
+        })
+        res.status(200).json({
+            message: "クエストを追加しました。"
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 router.get('/badges', async (req, res) => {
     try {
         res.status(200).json({
