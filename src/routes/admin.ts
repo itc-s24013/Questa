@@ -93,5 +93,21 @@ router.post('/quest/delete/:id', async (req, res) => {
     }
 })
 
+router.post('/badge/delete/:id', async (req, res) => {
+    try {
+        await prisma.badge.update({
+            where: {
+                id: req.params.id
+            },
+            data: {
+                is_deleted: true
+            }
+        })
+        res.status(200)
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 
 export default router
