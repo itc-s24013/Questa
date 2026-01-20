@@ -33,34 +33,6 @@ router.get('/users', async (req, res) => {
     }
 })
 
-router.get('/quests', async (req, res) => {
-    try {
-        res.status(200).json({
-            users: await prisma.quest.findMany({
-                where: {
-                    is_deleted: false,
-                }
-            })
-        })
-    } catch (e) {
-        res.status(500).json({reason: e})
-    }
-})
-
-router.get('/badges', async (req, res) => {
-    try {
-        res.status(200).json({
-            users: await prisma.badge.findMany({
-                where: {
-                    is_deleted: false,
-                }
-            })
-        })
-    } catch (e) {
-        res.status(500).json({reason: e})
-    }
-})
-
 router.post('/user/delete/:id', async (req, res) => {
     try {
         await prisma.user.update({
@@ -77,6 +49,20 @@ router.post('/user/delete/:id', async (req, res) => {
     }
 })
 
+router.get('/quests', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.quest.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 router.post('/quest/delete/:id', async (req, res) => {
     try {
         await prisma.quest.update({
@@ -88,6 +74,20 @@ router.post('/quest/delete/:id', async (req, res) => {
             }
         })
         res.status(200)
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/badges', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.badge.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
     } catch (e) {
         res.status(500).json({reason: e})
     }
