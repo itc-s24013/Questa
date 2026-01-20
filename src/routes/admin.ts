@@ -33,4 +33,32 @@ router.get('/users', async (req, res) => {
     }
 })
 
+router.get('/quests', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.quest.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/badges', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.badge.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
