@@ -41,20 +41,46 @@ router.post("/judge", async (req, res) => {
         }
         if (choice === getQuest.choice4) {
             try {
-                const user = await prisma.user.update({
+                const is_clear = await prisma.clear.findFirst({
                     where: {
-                        id: req.body.id,
-                        is_deleted: false
-                    },
-                    data: {
-                        my_point: {
-                            increment: getQuest.point
-                        }
+                        user_id: req.user,
+                        quest_id: req.body.quest_id
                     }
                 })
-                res.status(200).json({
-                    point: user.my_point
-                })
+                let cleared_point = null
+                if (is_clear) {
+                     cleared_point = 10
+                }
+                try {
+                    const user = await prisma.user.update({
+                        where: {
+                            id: req.body.id,
+                            is_deleted: false
+                        },
+                        data: {
+                            my_point: {
+                                increment: cleared_point ?? getQuest.point
+                            }
+                        }
+                    })
+                    if (cleared_point) {
+                        try {
+                            await prisma.clear.create({
+                                data: {
+                                    user_id: req.body.user_id,
+                                    quest_id: req.body.quest_id
+                                }
+                            })
+                        } catch (e) {
+                            res.json({reason: e})
+                        }
+                    }
+                    res.status(200).json({
+                        point: user.my_point
+                    })
+                } catch (e) {
+                    res.json({reason: e})
+                }
             } catch (e) {
                 res.json({reason: e})
             }
