@@ -1,0 +1,36 @@
+import {Router} from 'express'
+import prisma from "../libs/db.js";
+
+export const router = Router();
+
+router.use(async (req, res, next) => {
+    // ログイン中かどうかをチェックするミドルウェア
+    if (!req.isAuthenticated()) {
+        return res.status(400).json({
+            reason: 'ログインをしてください'
+        })
+    }
+
+    if (req.body.is_adimin !== true) {
+        return res.status(403).json({
+            reason: '管理者権限がありません'
+        })
+    }
+    next() // ログイン中なので次の処理へ
+})
+
+router.get('/users', async (req, res) => {
+    try {
+        res.status(200).json({
+            users: await prisma.user.findMany({
+                where: {
+                    is_deleted: false,
+                }
+            })
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+export default router

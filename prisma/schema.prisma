@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,23 +14,26 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid(7)) @db.VarChar(36)
-  email      String   @unique @db.VarChar(256)
-  name       String   @db.VarChar(128)
-  password   String   @db.VarChar(128)
-  my_point   String   @db.VarChar(128)
-  is_admin   Boolean  @default(false)
-  is_deleted Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id         String    @id @default(uuid(7)) @db.VarChar(36)
+  email      String    @unique @db.VarChar(256)
+  name       String    @db.VarChar(128)
+  password   String    @db.VarChar(128)
+  my_point   Int       @default(0)
+  collects   Collect[]
+  is_admin   Boolean   @default(false)
+  is_deleted Boolean   @default(false)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 model Badge {
-  id          String  @id @default(uuid(7)) @db.VarChar(36)
-  name        String  @db.VarChar(128)
-  badge_image String  @db.VarChar(256)
-  rarity      Int // レア度
-  is_deleted  Boolean @default(false)
+  id              String    @id @default(uuid(7)) @db.VarChar(36)
+  name            String    @db.VarChar(128)
+  badge_image_url String    @db.VarChar(256)
+  rarity          Int
+  scope           Scope     @relation(fields: [rarity], references: [rarity_list])
+  collects        Collect[]
+  is_deleted      Boolean   @default(false)
 }
 
 model Quest {
@@ -62,7 +65,7 @@ model Clear {
 
 // ガチャの出現確率
 model Scope {
-  rarity      Int   @unique
-  badge       Badge @relation(fields: [rarity], references: [rarity])
-  probability Int   @unique // 確率
+  rarity_list Int     @unique
+  probability Int     @unique // 確率
+  badges      Badge[]
 }
