@@ -10,31 +10,43 @@ router.get("/", async (req, res) => {
                 is_deleted: false
             }
         })
-        const result = quests.map(quest => ({
-            id: quest.id,
-            title: quest.title,
-            point: quest.point
-        }))
-        res.status(200).json(result)
-    }
-    catch (e) {
-        res.json({reason: e})
-    }
-})
-
-router.get("/:id", async (req, res) => {
-    try {
-        return res.status(200).json(
-            await prisma.quest.findFirst({
+        try {
+            const cleared_quests = await prisma.clear.findMany({
                 where: {
-                    id: req.params.id,
-                    is_deleted: false
+                    user_id: req.body.user_id
                 }
-            }))
-    }
-    catch (e) {
-        res.json({reason: e})
+            })
+
+            const result = quests.map(quest => {
+                const is_cleared = cleared_quests.some(clear => clear.quest_id === quest.id);
+                return {
+                    id: quest.id,
+                    title: quest.title,
+                    point: is_cleared ? 10 : quest.point
+                }
+            })
+            res.status(200).json(result)
+        } catch (e) {
+            res.status(200).json({reason: e})
+        }
+    } catch (e) {
+        res.status(200).json({reason: e})
     }
 })
 
-export default router
+    router.get("/:id", async (req, res) => {
+        try {
+            return res.status(200).json(
+                await prisma.quest.findFirst({
+                    where: {
+                        id: req.params.id,
+                        is_deleted: false
+                    }
+                }))
+        }
+        catch (e) {
+            res.json({reason: e})
+        }
+    })
+
+    export default router
