@@ -19,7 +19,7 @@ router.use(async (req, res, next) => {
     next() // ログイン中なので次の処理へ
 })
 
-router.get('/users', async (req, res) => {
+router.get('/user', async (req, res) => {
     try {
         res.status(200).json({
             users: await prisma.user.findMany({
@@ -33,7 +33,7 @@ router.get('/users', async (req, res) => {
     }
 })
 
-router.post('/user/delete/:id', async (req, res) => {
+router.delete('/user/:id', async (req, res) => {
     try {
         await prisma.user.update({
             where: {
@@ -49,7 +49,7 @@ router.post('/user/delete/:id', async (req, res) => {
     }
 })
 
-router.get('/quests', async (req, res) => {
+router.get('/quest', async (req, res) => {
     try {
         res.status(200).json({
             users: await prisma.quest.findMany({
@@ -63,7 +63,7 @@ router.get('/quests', async (req, res) => {
     }
 })
 
-router.post('/quest/update/:id', async (req, res) => {
+router.put('/quest/:id', async (req, res) => {
     const {title, choice1, choice2, choice3, choice4, point} = req.body
     try {
         await prisma.quest.update({
@@ -85,7 +85,7 @@ router.post('/quest/update/:id', async (req, res) => {
     }
 })
 
-router.post('/quest/delete/:id', async (req, res) => {
+router.delete('/quest/:id', async (req, res) => {
     try {
         await prisma.quest.update({
             where: {
@@ -101,7 +101,7 @@ router.post('/quest/delete/:id', async (req, res) => {
     }
 })
 
-router.post('/quest/add', async (req, res) => {
+router.post('/quest', async (req, res) => {
     try {
         await prisma.quest.create({
             data: {
@@ -121,7 +121,7 @@ router.post('/quest/add', async (req, res) => {
     }
 })
 
-router.get('/badges', async (req, res) => {
+router.get('/badge', async (req, res) => {
     try {
         res.status(200).json({
             users: await prisma.badge.findMany({
@@ -135,7 +135,7 @@ router.get('/badges', async (req, res) => {
     }
 })
 
-router.post('/badge/update/:id', async (req, res) => {
+router.put('/badge/:id', async (req, res) => {
     const {name, badge_image_url, rarity} = req.body
     try {
         await prisma.badge.update({
@@ -154,8 +154,7 @@ router.post('/badge/update/:id', async (req, res) => {
     }
 })
 
-
-router.post('/badge/delete/:id', async (req, res) => {
+router.delete('/badge/:id', async (req, res) => {
     try {
         await prisma.badge.update({
             where: {
@@ -171,7 +170,7 @@ router.post('/badge/delete/:id', async (req, res) => {
     }
 })
 
-router.post('/badge/add', async (req, res) => {
+router.post('/badge', async (req, res) => {
     try {
         await prisma.badge.create({
             data: {
