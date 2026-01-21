@@ -135,6 +135,26 @@ router.get('/badges', async (req, res) => {
     }
 })
 
+router.post('/badge/update/:id', async (req, res) => {
+    const {name, badge_image_url, rarity} = req.body
+    try {
+        await prisma.badge.update({
+            where: {
+                id: req.params.id
+            },
+            data: {
+                name: name,
+                badge_image_url: badge_image_url,
+                rarity: rarity,
+            }
+        })
+        res.status(200).json({message: "バッジを更新しました。"})
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+
 router.post('/badge/delete/:id', async (req, res) => {
     try {
         await prisma.badge.update({
