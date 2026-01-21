@@ -63,6 +63,28 @@ router.get('/quests', async (req, res) => {
     }
 })
 
+router.post('/quest/update/:id', async (req, res) => {
+    const {title, choice1, choice2, choice3, choice4, point} = req.body
+    try {
+        await prisma.quest.update({
+            where: {
+                id: req.params.id
+            },
+            data: {
+                title: title,
+                choice1: choice1,
+                choice2: choice2,
+                choice3: choice3,
+                choice4: choice4,
+                point: point,
+            }
+        })
+        res.status(200).json({message: "クエストを更新しました。"})
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 router.post('/quest/delete/:id', async (req, res) => {
     try {
         await prisma.quest.update({
