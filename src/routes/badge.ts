@@ -23,4 +23,28 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.get('/:badge_id', async (req, res) => {
+    try {
+        const has_badge = await prisma.collect.findFirst({
+            where: {
+                user_id: req.body.id,
+                badge_id: req.params.badge_id
+            }
+        })
+        if (!has_badge) {
+            return res.status(404).json({reason: 'バッジを所持していません'})
+        }
+        res.status(200).json(
+            await prisma.badge.findUnique({
+                where: {
+                    is_deleted: false,
+                    id: has_badge.badge_id
+                }
+            })
+        )
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
