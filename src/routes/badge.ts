@@ -47,4 +47,33 @@ router.get('/:badge_id', async (req, res) => {
     }
 })
 
+router.post('/:badge_id/icon', async (req, res) => {
+    try {
+        const has_badge = await prisma.collect.findFirst({
+            where: {
+                user_id: req.body.id,
+                badge_id: req.params.badge_id
+            }
+        })
+        if (!has_badge) {
+            return res.status(404).json({reason: 'バッジを所持していません'})
+        }
+        try {
+            await prisma.collect.update({
+                where: {
+                    id: has_badge.id
+                },
+                data: {
+                    is_choice: !has_badge.is_choice
+                }
+            })
+            res.status(200).end()
+        } catch (e) {
+            res.status(500).json({reason: e})
+        }
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
