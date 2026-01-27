@@ -85,6 +85,9 @@ router.post("/judge", async (req, res) => {
                 res.json({reason: e})
             }
         }
+        res.status(200).json({
+            message: "残念！不正解！"
+        })
     } catch (e) {
         res.json({reason: e})
     }
