@@ -34,14 +34,15 @@ model Badge {
 }
 
 model Quest {
-  id         String  @id @default(uuid(7)) @db.VarChar(36)
-  title      String  @db.VarChar(128)
-  choice1    String  @db.VarChar(512)
-  choice2    String  @db.VarChar(512)
-  choice3    String  @db.VarChar(512)
-  choice4    String  @db.VarChar(512)
-  point      Int
-  is_deleted Boolean @default(false)
+  id          String  @id @default(uuid(7)) @db.VarChar(36)
+  title       String  @db.VarChar(128)
+  description String  @db.VarChar(512)
+  choice1     String  @db.VarChar(512)
+  choice2     String  @db.VarChar(512)
+  choice3     String  @db.VarChar(512)
+  choice4     String  @db.VarChar(512)
+  point       Int
+  is_deleted  Boolean @default(false)
 }
 
 model Collect {
