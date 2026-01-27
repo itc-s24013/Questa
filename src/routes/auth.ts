@@ -7,15 +7,18 @@ export const router = Router();
 
 // 新規登録
 router.post('/signup', async function (req, res) {
-    const {email, password} = req.body;
+    const {email, password, name} = req.body;
 
     try{
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            // options: {　リダイレクト先指定のオプション
-            //     emailRedirectTo: 'https://example.com/welcome',
-            // },
+            options: {　
+                // emailRedirectTo: 'https://example.com/welcome',
+                data:{
+                    name
+                }
+            },
         })
         console.log("Data:", data);
         console.log("Error:", error);
@@ -34,7 +37,7 @@ router.post('/signup', async function (req, res) {
             } else if (error.message.includes("Password should be at least")) {
                 errorMessage = "パスワードは最低6文字以上で設定してください。";
             }
-            return res.status(400).json({ error: errorMessage });
+            return res.status(400).json({ error: errorMessage + ":" + error.message });
         }
         res.status(200).json({message: 'ワンタイムパスワードを送信しました。メールをご確認ください。'})
     }catch (err){

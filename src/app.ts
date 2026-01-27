@@ -11,6 +11,7 @@ import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
 import adminRouter from './routes/admin.js'
 import pointRouter from './routes/point.js'
+import badgeRouter from './routes/badge.js'
 import supabase from "./libs/supabase.js";
 // import {VerifyOtpParams} from "@supabase/supabase-js";
 
@@ -61,6 +62,7 @@ app.use('/users', usersRouter)
 app.use('/quest', questRouter)
 app.use('/admin', adminRouter)
 app.use('/point', pointRouter)
+app.use('/badge', badgeRouter)
 app.use('/', indexRouter)
 
 

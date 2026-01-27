@@ -106,6 +106,7 @@ router.post('/quest', async (req, res) => {
         await prisma.quest.create({
             data: {
                 title: req.body.title,
+                description: req.body.description,
                 choice1: req.body.choice1,
                 choice2: req.body.choice2,
                 choice3: req.body.choice3,
