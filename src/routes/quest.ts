@@ -57,6 +57,7 @@ router.get("/:id", async (req, res) => {
                 res.status(200).json({
                     id: quest?.id,
                     title: quest?.title,
+                    description: quest?.description,
                     choice1: quest?.choice1,
                     choice2: quest?.choice2,
                     choice3: quest?.choice3,
@@ -64,7 +65,6 @@ router.get("/:id", async (req, res) => {
                     point: 10
                 })
             }
-
             res.status(200).json(quest)
         } catch (e) {
             res.status(200).json({reason: e})
