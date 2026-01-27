@@ -91,25 +91,38 @@ router.post('/:badge_id/choice', async (req, res) => {
 
 router.post('/:badge_id/icon', async (req, res) => {
     try {
-        const has_badge = await prisma.collect.findFirst({
+        const icon_badge = await prisma.collect.findMany({
             where: {
                 user_id: req.body.id,
-                badge_id: req.params.badge_id
+                is_icon: true
             }
         })
-        if (!has_badge) {
-            return res.status(404).json({reason: 'バッジを所持していません'})
-        }
         try {
-            await prisma.collect.update({
+            const has_badge = await prisma.collect.findFirst({
                 where: {
-                    id: has_badge.id
-                },
-                data: {
-                    is_choice: !has_badge.is_icon
+                    user_id: req.body.id,
+                    badge_id: req.params.badge_id
                 }
             })
-            res.status(200).end()
+            if (!has_badge) {
+                return res.status(404).json({reason: 'バッジを所持していません'})
+            }
+            if (!has_badge.is_icon && !icon_badge) {
+                return res.status(200).json({reason: 'アイコンに設定できるバッジは1個までです'})
+            }
+            try {
+                await prisma.collect.update({
+                    where: {
+                        id: has_badge.id
+                    },
+                    data: {
+                        is_choice: !has_badge.is_icon
+                    }
+                })
+                res.status(200).end()
+            } catch (e) {
+                res.status(500).json({reason: e})
+            }
         } catch (e) {
             res.status(500).json({reason: e})
         }
