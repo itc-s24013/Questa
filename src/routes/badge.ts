@@ -187,4 +187,24 @@ router.get('/choice', async (req, res) => {
     }
 })
 
+router.post('/add', async (req, res) => {
+    const badges = req.body.badge_ids
+    try {
+        const dataList = badges.map((id:string) => ({
+            user_id: req.body.user_id,
+            badge_id: id,
+        }));
+
+        await prisma.collect.createMany({
+            data: dataList,
+            skipDuplicates: true,
+        });
+        res.status(200).json({
+            message: '新しいバッジを獲得しました！'
+        })
+    } catch (e) {
+        return res.status(500).json({reason: e})
+    }
+})
+
 export default router
