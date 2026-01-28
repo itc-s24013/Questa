@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
     try {
         const has_badges = await prisma.collect.findMany({
             where: {
-               user_id: req.body.id
+                user_id: req.body.id
             }
         })
         res.status(200).json(
@@ -133,9 +133,28 @@ router.post('/:badge_id/icon', async (req, res) => {
 
 router.get('/collect', async (req, res) => {
     try {
-         res.status(200).json(await prisma.collect.findMany({
+        res.status(200).json(await prisma.collect.findMany({
             where: {
                 user_id: req.body.id,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/icon', async (req, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findFirst({
+            where: {
+                user_id: req.body.id,
+                is_icon: true,
                 badge: {
                     is_deleted: false
                 }
