@@ -168,4 +168,23 @@ router.get('/icon', async (req, res) => {
     }
 })
 
+router.get('/choice', async (req, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.body.id,
+                is_choice: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
