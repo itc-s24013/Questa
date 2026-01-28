@@ -131,4 +131,22 @@ router.post('/:badge_id/icon', async (req, res) => {
     }
 })
 
+router.get('/collect', async (req, res) => {
+    try {
+         res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.body.id,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
 export default router
