@@ -85,6 +85,9 @@ router.post("/judge", async (req, res) => {
                 res.json({reason: e})
             }
         }
+        res.status(200).json({
+            message: "残念！不正解！"
+        })
     } catch (e) {
         res.json({reason: e})
     }
@@ -164,6 +167,27 @@ router.post("/sameBadges", async (req, res) => {
                 res.json({reason: e})
             }
         }
+    } catch (e) {
+        res.json({reason: e})
+    }
+})
+
+router.post('/reduce/:point', async (req, res) => {
+    try {
+         await prisma.user.update({
+            where: {
+                id: req.body.user,
+                is_deleted: false
+            },
+            data: {
+                my_point: {
+                    decrement: Number(req.params.point)
+                }
+            }
+        })
+        res.status(200).json({
+            message: 'ポイントを減らしました',
+        })
     } catch (e) {
         res.json({reason: e})
     }

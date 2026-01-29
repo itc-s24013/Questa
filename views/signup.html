@@ -46,6 +46,7 @@
     <h2>新規登録</h2>
     <input type="email" id="email" placeholder="メールアドレス" required>
     <input type="password" id="password" placeholder="パスワード" required>
+    <input type="text" id="name" placeholder="ユーザー名" required>
     <button onclick="handleSignup()">登録する</button>
     <div id="message" class="msg"></div>
 </div>
@@ -57,12 +58,13 @@
     async function handleSignup() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
         const msgDiv = document.getElementById('message');
 
         const res = await fetch('/auth/signup', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({email, password, name})
         });
 
         const result = await res.json();

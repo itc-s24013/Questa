@@ -10,16 +10,17 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid(7)) @db.VarChar(36)
+  id         String    @id @db.Uuid // auth.users.idと一致させる
   email      String    @unique @db.VarChar(256)
-  name       String    @db.VarChar(128)
-  password   String    @db.VarChar(128)
+  name       String    @default("名称未設定") @db.VarChar(128)
   my_point   Int       @default(0)
   is_admin   Boolean   @default(false)
   is_deleted Boolean   @default(false)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   collects   Collect[]
+
+  @@map("User")
 }
 
 model Badge {
@@ -33,20 +34,21 @@ model Badge {
 }
 
 model Quest {
-  id         String  @id @default(uuid(7)) @db.VarChar(36)
-  title      String  @db.VarChar(128)
-  choice1    String  @db.VarChar(512)
-  choice2    String  @db.VarChar(512)
-  choice3    String  @db.VarChar(512)
-  choice4    String  @db.VarChar(512)
-  point      Int
-  is_deleted Boolean @default(false)
+  id          String  @id @default(uuid(7)) @db.VarChar(36)
+  title       String  @db.VarChar(128)
+  description String  @db.VarChar(512)
+  choice1     String  @db.VarChar(512)
+  choice2     String  @db.VarChar(512)
+  choice3     String  @db.VarChar(512)
+  choice4     String  @db.VarChar(512)
+  point       Int
+  is_deleted  Boolean @default(false)
 }
 
 model Collect {
   id        String  @id @default(uuid(7)) @db.VarChar(36)
   badge_id  String  @db.VarChar(36)
-  user_id   String  @db.VarChar(36)
+  user_id   String  @db.Uuid
   is_choice Boolean @default(false)
   is_icon   Boolean @default(false)
   badge     Badge   @relation(fields: [badge_id], references: [id])
@@ -55,7 +57,7 @@ model Collect {
 
 model Clear {
   id       String @id @default(uuid(7)) @db.VarChar(36)
-  user_id  String @db.VarChar(36)
+  user_id  String @db.Uuid
   quest_id String @db.VarChar(36)
 }
 
