@@ -12,6 +12,7 @@ import questRouter from './routes/quest.js'
 import adminRouter from './routes/admin.js'
 import pointRouter from './routes/point.js'
 import badgeRouter from './routes/badge.js'
+import gachaRouter from './routes/gacha.js'
 import supabase from "./libs/supabase.js";
 // import {VerifyOtpParams} from "@supabase/supabase-js";
 
@@ -63,6 +64,7 @@ app.use('/quest', questRouter)
 app.use('/admin', adminRouter)
 app.use('/point', pointRouter)
 app.use('/badge', badgeRouter)
+app.use('/gacha', gachaRouter)
 app.use('/', indexRouter)
 
 
