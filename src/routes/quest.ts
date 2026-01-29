@@ -74,4 +74,24 @@ router.get("/:id", async (req, res) => {
     }
 })
 
+router.get("/cleared", async (req, res) => {
+    try {
+        const cleared = await prisma.clear.findMany({
+            where: {
+                user_id: req.body.user_id
+            }
+        })
+        res.status(200).json(
+            await prisma.quest.findMany({
+                where: {
+                    is_deleted: false,
+                    id: {in: cleared.map(quest => quest.quest_id)}
+                }
+            })
+        )
+    } catch (e) {
+        res.json({reason: e})
+    }
+})
+
 export default router
