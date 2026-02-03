@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questa - クエスト一覧</title>
+    <style>
+        :root {
+            --header-green: #c2e8b6;
+            --body-yellow: #fdf6c4;
+            --white: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--body-yellow);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-height: 90vh;
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: var(--header-green);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points-badge {
+            background: var(--white);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-icons span {
+            font-size: 24px;
+            cursor: pointer;
+            filter: grayscale(0.2);
+        }
+
+        /* クエストリスト */
+        .content {
+            padding: 20px 40px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+            color: #555;
+        }
+
+        .quest-section {
+            margin-bottom: 30px;
+        }
+
+        .quest-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--header-green);
+            margin-bottom: 8px;
+            padding: 10px 20px;
+            border-radius: 25px; /* 丸みのあるデザイン */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.1s;
+            cursor: pointer;
+        }
+
+        .quest-item:hover {
+            transform: scale(1.02);
+        }
+
+        .quest-title {
+            font-weight: bold;
+        }
+
+        .quest-reward {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* スクロールバー風の装飾（画像右側のグレーの線） */
+        .quest-list-wrapper {
+            position: relative;
+            border-right: 4px solid #e0e0e0;
+            padding-right: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="points-badge">P &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 150</div>
+        <div class="nav-icons">
+            <span>👤</span>
+            <span>🎒</span>
+            <span>🎰</span>
+            <span>🚪</span>
+        </div>
+    </header>
+
+    <div class="content">
+        <section class="quest-section">
+            <h2>常設</h2>
+            <div class="quest-list-wrapper">
+                <div class="quest-item">
+                    <span class="quest-title">タイトル３</span>
+                    <span class="quest-reward">５Ｐ</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-title">タイトル４</span>
+                    <span class="quest-reward">５Ｐ</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-title">タイトル５</span>
+                    <span class="quest-reward">１０Ｐ</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-title">タイトル６</span>
+                    <span class="quest-reward">１５Ｐ</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="quest-section">
+            <h2>復習</h2>
+            <div class="quest-list-wrapper">
+                <div class="quest-item">
+                    <span class="quest-title">タイトル１</span>
+                    <span class="quest-reward">１Ｐ</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-title">タイトル２</span>
+                    <span class="quest-reward">１Ｐ</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+</body>
+</html>

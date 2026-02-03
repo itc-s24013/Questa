@@ -54,6 +54,40 @@
 </div>
 
 <script>
+    // javascript
+    // 使い方: SUPABASE_SERVICE_ROLE_KEY=... node decode_service_key.js
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key) {
+        console.error('SUPABASE_SERVICE_ROLE_KEY が設定されていません');
+        process.exit(1);
+    }
+    console.log('キープレビュー:', key.slice(0,8) + '... len=' + key.length);
+
+    const parts = key.split('.');
+    if (parts.length !== 3) {
+        console.error('JWT 形式ではありません');
+        process.exit(1);
+    }
+
+    const base64urlDecode = s => {
+        s = s.replace(/-/g, '+').replace(/_/g, '/');
+        while (s.length % 4) s += '=';
+        return Buffer.from(s, 'base64').toString('utf8');
+    };
+
+    try {
+        const header = JSON.parse(base64urlDecode(parts[0]));
+        const payload = JSON.parse(base64urlDecode(parts[1]));
+        console.log('header:', header);
+        console.log('payload:', payload);
+        console.log('role claim:', payload.role || '(無し)');
+        console.log('is service_role:', payload.role === 'service_role');
+    } catch (e) {
+        console.error('デコードに失敗しました:', e.message);
+        process.exit(1);
+    }
+
+
     async function handleSignup() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -66,11 +100,12 @@
         });
 
         const result = await res.json();
+        console.log(result);
         if (res.ok) {
             // 成功したらダッシュボードへ遷移
             window.location.href = `/dashboard?email=${encodeURIComponent(email)}`;
         } else {
-            msgDiv.innerText = result.error || "エラーが発生しました";
+            msgDiv.innerText = result.error || "login.htmlでエラーが発生しました";
         }
     }
 </script>

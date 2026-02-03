@@ -73,7 +73,7 @@
             // 成功したらOTP入力画面へ遷移（または表示切替）
             window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
         } else {
-            msgDiv.innerText = result.error || "エラーが発生しました";
+            msgDiv.innerText = result.error || "signup.htmlでエラーが発生しました";
         }
     }
 </script>

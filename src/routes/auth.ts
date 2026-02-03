@@ -15,9 +15,7 @@ router.post('/signup', async function (req, res) {
             password,
             options: {　
                 // emailRedirectTo: 'https://example.com/welcome',
-                data:{
-                    name
-                }
+                data: { name }
             },
         })
         console.log("Data:", data);
@@ -104,7 +102,22 @@ router.post('/login', async function (req, res) {
             }
             return res.status(400).json({ error: errorMessage });
         }
-        res.status(200).json({ message: "ログインに成功しました！", session: data.session });
+
+        const accessToken = data.session?.access_token;
+        if (!accessToken) {
+            return res.status(500).json({ error: 'トークン取得に失敗しました。' });
+        }
+
+        // HttpOnly Cookieにトークン保存
+        res.cookie('access_token', accessToken, {
+            httpOnly: true, // JavaScriptからアクセス不可
+            secure: process.env.NODE_ENV === 'production', // 本番環境ではSecure属性を有効にする
+            sameSite: 'lax', // クロスサイト送信の制御
+            maxAge: 1000 * 60 * 60 * 24, // 1日
+        })
+        //res.status(200).json({ message: "ログインに成功しました！", session: data.session });
+        // ログイン成功後、認証を通してマイページへリダイレクト
+        return res.redirect('/users/api/userData');
 
 })
 
