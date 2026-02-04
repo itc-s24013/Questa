@@ -66,6 +66,8 @@ app.use((req, res, next) => {
 
 // 静的ファイル
 // app.use(express.static(path.join(path.dirname(''), 'public')));
+app.use(express.static('public'))
+app.set('public', path.join(path.dirname(''), 'public'));
 
 // views設定
 app.use(express.static('views'))

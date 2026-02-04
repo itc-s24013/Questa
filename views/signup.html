@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>新規登録 - Questa</title>
+    <script defer src="/js/handle.js"></script>
     <style>
         body {
             font-family: sans-serif;
@@ -47,35 +48,11 @@
     <input type="email" id="email" placeholder="メールアドレス" required>
     <input type="password" id="password" placeholder="パスワード" required>
     <input type="text" id="name" placeholder="ユーザー名" required>
-    <button onclick="handleSignup()">登録する</button>
+    <button data-action="signup">登録する</button>
     <div id="message" class="msg"></div>
 </div>
 <div>
-    <button onclick="location.href='/'">戻る</button>
+    <button data-action="goBack">戻る</button>
 </div>
-
-<script>
-    async function handleSignup() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const name = document.getElementById('name').value;
-        const msgDiv = document.getElementById('message');
-
-        const res = await fetch('/auth/signup', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password, name})
-        });
-
-        const result = await res.json();
-        if (res.ok) {
-            alert("メールを確認して、届いた8桁の数字を入力してください");
-            // 成功したらOTP入力画面へ遷移（または表示切替）
-            window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
-        } else {
-            msgDiv.innerText = result.error || "signup.htmlでエラーが発生しました";
-        }
-    }
-</script>
 </body>
 </html>
