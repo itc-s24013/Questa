@@ -1,25 +1,62 @@
-import {Router} from 'express'
-// import argon2 from "argon2";
+import {Router, Request} from 'express'
 // import prisma from "../libs/db.js";
-// import app from "../app.js";
 import supabase from "../libs/supabase.js";
+import {authCheck} from '../middleware/auth.js';
+import {AuthRequest} from '../types/express.js';
+import path from "path";
 
 export const router = Router();
 
-router.get("/", (req, res) => {
-    res.send("Hello, users.ts!");
+router.get("/", authCheck, (req, res) => {
+    // const file = path.resolve(process.cwd(), 'views', 'quest_list.html');
+    // res.sendFile(file, (err) => {
+    //     if (err) {
+    //         console.error(err);
+    //         res.status(500).send("ファイルが見つかりません");
+    //     }
+    // });
+    res.json({message: "認証成功しました。ルートページです"});
+
 });
 
-// 新規登録ユーザー情報取得（保護されたルートの例）
-router.get('/protected', async (req, res) => {
-    const token = req.headers.authorization?.replace('Bearer ', '')
-    if (!token) return res.sendStatus(401)
-
-    const { data, error } = await supabase.auth.getUser(token)
-    if (error) return res.sendStatus(401)
-
-    res.json({ user: data.user })
+router.get('/dashboard', authCheck, async (req: AuthRequest, res) => {
+    const file = path.resolve(process.cwd(), 'views', 'dashboard.html');
+    res.sendFile(file, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send("ファイルが見つかりません");
+        }
+    });
 })
+
+// ユーザーデータ取得
+    router.get('/api/userData', authCheck, async (req: AuthRequest, res) => {
+        try {
+            const id = req.user?.id;
+            if (!id) {
+                console.warn('[/api/userData] missing req.id (認証情報なし)');
+                return res.status(401).json({reason: '認証情報がありません'});
+            }
+            const {data, error} = await supabase
+                .schema('public') // スキーマを明示的に指定
+                .from('User')
+                .select('name, my_point')
+                .eq('id', id)
+                .single();
+            if (error) {
+                console.error('[/api/userData] supabase error:', error);
+                return res.status(500).json({reason: error.message || 'ユーザーデータの取得に失敗しました'});
+            }
+
+            if (!data) {
+                console.error('[/api/userData] no data for id:', id);
+                return res.status(404).json({reason: 'ユーザーデータが見つかりません'});
+            }
+            return res.status(200).json(data);
+        } catch (e) {
+            return res.status(500).json({reason: e})
+        }
+    })
 
 // router.post('/login',
 //     passport.authenticate('local'),
@@ -85,4 +122,4 @@ router.get('/protected', async (req, res) => {
 //         }
 //     })
 
-export default router;
+    export default router;
