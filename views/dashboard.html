@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Questa - My Page</title>
+    <style>
+        :root {
+            --header-green: #c2e8b6;
+            --body-yellow: #fdf6c4;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 800px;
+            background-color: var(--body-yellow);
+            min-height: 500px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: var(--header-green);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+
+        .nav-icons {
+            font-size: 24px;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* メインエリア */
+        .content {
+            display: flex;
+            padding: 40px;
+            gap: 30px;
+        }
+
+        /* 左：プロフィール */
+        .left-col {
+            text-align: center;
+        }
+
+        .avatar-box {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 15px;
+        }
+
+        .name-tag {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* 右：ステータス */
+        .right-col {
+            flex-grow: 1;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="points">P &nbsp;&nbsp;&nbsp;&nbsp; 150</div>
+        <div class="nav-icons">
+            <span>👤</span>
+            <span>🎒</span>
+            <span>🎰</span>
+            <span>🚪</span>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="left-col">
+            <div class="avatar-box">🦩</div>
+            <div class="name-tag">ユーザー1号</div>
+        </div>
+
+        <div class="right-col">
+            <div class="badge-list">
+                <div class="badge-icon">🦩</div>
+                <div class="badge-icon">🦩</div>
+                <div class="badge-icon">🦩</div>
+                <div class="badge-icon">🦩</div>
+                <div class="badge-icon">🦩</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">達成クエスト数</div>
+                    <div class="stat-value">5</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">バッジ取得数</div>
+                    <div class="stat-value">10</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+<!--  バックから受け取りたいデータの定義  -->
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const msgDiv = document.getElementById('message');
+
+    // データ取得
+    const res = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+        // 成功したらコンソールに表示
+        console.log("ユーザ情報取得成功:", result);
+    } else {
+        msgDiv.innerText = result.error || "dashboard.htmlでエラーが発生しました";
+    }
+</script>
+
+</body>
+</html>
