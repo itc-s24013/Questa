@@ -10,6 +10,11 @@ const handlers = {
         const name = dataset.name || document.getElementById('name').value;
         const msgDiv = document.getElementById('message');
 
+        if (!email || !password || !name) {
+            msgDiv.innerText = "全ての項目を入力してください";
+            return;
+        }
+
         const res = await fetch('/auth/signup', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -38,10 +43,10 @@ const handlers = {
         const token = otpInput ? otpInput.value : '';
         const msgDiv = document.getElementById('verify-msg');
 
-        if (!email) {
-            msgDiv.innerText = "メールアドレスが必要です";
-            return;
-        }
+        // if (!email) {
+        //     msgDiv.innerText = "メールアドレスが必要です";
+        //     return;
+        // }
         if (!token) {
             msgDiv.innerText = "メールに届いた認証コードを入力してください";
             return;
@@ -57,7 +62,7 @@ const handlers = {
             const result = await res.json();
             if (res.ok) {
                 alert("認証成功！ログインしました");
-                window.location.href = `/dashboard?email=${encodeURIComponent(email)}`; // ログイン後の画面へ
+                window.location.href = `/users/dashboard`;
             } else {
                 msgDiv.innerText = result.error;
             }
@@ -91,7 +96,7 @@ const handlers = {
 
             if (res.ok) {
                 // 成功したらダッシュボードへ遷移
-                window.location.href = `/dashboard?email=${encodeURIComponent(email)}`;
+                window.location.href = `/users/dashboard`;
             } else {
                 msgDiv.innerText = result.error || "login.htmlでエラーが発生しました";
             }

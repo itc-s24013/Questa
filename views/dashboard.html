@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Questa - My Page</title>
+    <title>Questa - マイページ</title>
+    <script defer src="/js/dashboard.js"></script>
     <style>
         :root {
             --header-green: #c2e8b6;
@@ -130,7 +131,7 @@
 
 <div class="container">
     <header>
-        <div class="points">P &nbsp;&nbsp;&nbsp;&nbsp; 150</div>
+        <div class="points">P ---</div>
         <div class="nav-icons">
             <span>👤</span>
             <span>🎒</span>
@@ -142,7 +143,7 @@
     <div class="content">
         <div class="left-col">
             <div class="avatar-box">🦩</div>
-            <div class="name-tag">ユーザー1号</div>
+            <div class="name">ユーザー1号</div>
         </div>
 
         <div class="right-col">
@@ -167,28 +168,6 @@
         </div>
     </div>
 </div>
-
-<script>
-<!--  バックから受け取りたいデータの定義  -->
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const msgDiv = document.getElementById('message');
-
-    // データ取得
-    const res = await fetch('/auth/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email, password})
-    });
-
-    const result = await res.json();
-    if (res.ok) {
-        // 成功したらコンソールに表示
-        console.log("ユーザ情報取得成功:", result);
-    } else {
-        msgDiv.innerText = result.error || "dashboard.htmlでエラーが発生しました";
-    }
-</script>
 
 </body>
 </html>
