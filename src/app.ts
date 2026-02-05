@@ -13,6 +13,7 @@ import cors from 'cors';
 import { authCheck } from './middleware/auth.js'
 import indexRouter from './routes/index.js'
 import authRouter from './routes/auth.js'
+import apiRoutes from './routes/api/userData.js'
 import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
 import adminRouter from './routes/admin.js'
@@ -102,12 +103,10 @@ app.get('/signup', (req, res) => {
     res.sendFile(path.resolve('views/signup.html'));
 });
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000')
-})
 
 // ルーティング
 app.use('/auth', authRouter)
+app.use('/api/userData', apiRoutes)
 app.use('/users', usersRouter)
 app.use('/quest', questRouter)
 app.use('/admin', adminRouter)
@@ -116,5 +115,9 @@ app.use('/badge', badgeRouter)
 app.use('/gacha', gachaRouter)
 app.use('/', indexRouter)
 
+
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000')
+})
 
 export default app
