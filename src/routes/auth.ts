@@ -117,7 +117,7 @@ router.post('/login', async function (req, res) {
         })
         //res.status(200).json({ message: "ログインに成功しました！", session: data.session });
         // ログイン成功後、認証を通してマイページへリダイレクト
-        return res.redirect('/users/api/userData');
+        return res.redirect('/api/userData');
 
 })
 
