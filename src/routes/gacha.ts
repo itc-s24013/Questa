@@ -13,16 +13,16 @@ router.get('/:count', async (req, res) => {
         return 5;
     })
     try {
-        const badges = probabilities.map(probability => {
-            return [prisma.badge.findMany({
+        const badges = await Promise.all(probabilities.map(probability => {
+            return prisma.badge.findMany({
                 where: {
                     is_deleted: false,
                     scope: {
                         rarity_list: probability
                     }
                 }
-            })]
-        })
+            })
+        }))
         res.status(200).json(badges.map(badge => {
             if (badge.length == 0) return null;
             return badge[Math.floor(Math.random() * badge.length)]
