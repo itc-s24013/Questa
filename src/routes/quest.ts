@@ -4,35 +4,35 @@ import prisma from "../libs/db.js";
 export const router = Router();
 
 router.get("/", async (req, res) => {
+    try {
+        const cleared_quests = await prisma.clear.findMany({
+            where: {
+                user_id: req.body.user_id
+            }
+        })
+
         try {
-            const cleared_quests = await prisma.clear.findMany({
+            const quests = await prisma.quest.findMany({
                 where: {
-                    user_id: req.body.user_id
+                    is_deleted: false,
+                    id: {notIn: cleared_quests.map(quest => quest.quest_id)}
                 }
             })
 
-            try {
-                const quests = await prisma.quest.findMany({
-                    where: {
-                        is_deleted: false,
-                        id: {notIn: cleared_quests.map(quest => quest.quest_id)}
-                    }
-                })
+            const result = quests.map(quest => ({
+                id: quest.id,
+                title: quest.title,
+                point: quest.point
+            }))
 
-                const result = quests.map(quest => ({
-                    id: quest.id,
-                    title: quest.title,
-                    point: quest.point
-                }))
-
-                res.status(200).json(result)
-            } catch (e) {
-                res.status(200).json({reason: e})
-            }
+            res.status(200).json(result)
         } catch (e) {
-            res.json({reason: e})
+            res.status(200).json({reason: e})
         }
-    })
+    } catch (e) {
+        res.json({reason: e})
+    }
+})
 
 router.get("/:id", async (req, res) => {
     try {
@@ -81,14 +81,24 @@ router.get("/cleared", async (req, res) => {
                 user_id: req.body.user_id
             }
         })
-        res.status(200).json(
-            await prisma.quest.findMany({
+
+        try {
+            const cleared_quests = await prisma.quest.findMany({
                 where: {
                     is_deleted: false,
                     id: {in: cleared.map(quest => quest.quest_id)}
                 }
             })
-        )
+
+            const result = cleared_quests.map(quest => ({
+                id: quest.id,
+                title: quest.title,
+                point: 10
+            }))
+            res.status(200).json(result)
+        } catch (e) {
+            res.json({reason: e})
+        }
     } catch (e) {
         res.json({reason: e})
     }
