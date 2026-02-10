@@ -1,13 +1,15 @@
 import {Router} from 'express'
 import prisma from "../libs/db.js";
+import {authCheck} from "../middleware/auth.js";
+import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/",authCheck, async (req:AuthRequest, res) => {
     try {
         const cleared_quests = await prisma.clear.findMany({
             where: {
-                user_id: req.body.user_id
+                user_id: req.user?.id
             }
         })
 
@@ -34,7 +36,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id",authCheck, async (req:AuthRequest, res) => {
     try {
         const quest = await prisma.quest.findUnique({
             where: {
@@ -48,7 +50,7 @@ router.get("/:id", async (req, res) => {
         try {
             const cleared_quest = await prisma.clear.findFirst({
                 where: {
-                    user_id: req.body.user_id,
+                    user_id: req.user?.id,
                     quest_id: req.params.id
                 }
             })
@@ -74,11 +76,11 @@ router.get("/:id", async (req, res) => {
     }
 })
 
-router.get("/cleared", async (req, res) => {
+router.get("/cleared",authCheck, async (req:AuthRequest, res) => {
     try {
         const cleared = await prisma.clear.findMany({
             where: {
-                user_id: req.body.user_id
+                user_id: req.user?.id
             }
         })
 
