@@ -172,4 +172,25 @@ router.post("/sameBadges", async (req, res) => {
     }
 })
 
+router.post('/reduce/:point', async (req, res) => {
+    try {
+         await prisma.user.update({
+            where: {
+                id: req.body.user,
+                is_deleted: false
+            },
+            data: {
+                my_point: {
+                    decrement: Number(req.params.point)
+                }
+            }
+        })
+        res.status(200).json({
+            message: 'ポイントを減らしました',
+        })
+    } catch (e) {
+        res.json({reason: e})
+    }
+})
+
 export default router
