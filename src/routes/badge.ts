@@ -1,4 +1,4 @@
-import express, {Router} from 'express'
+import  {Router} from 'express'
 import prisma from "../libs/db.js";
 
 export const router = Router();
@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
     try {
         const has_badges = await prisma.collect.findMany({
             where: {
-               user_id: req.body.id
+                user_id: req.body.id
             }
         })
         res.status(200).json(
@@ -128,6 +128,82 @@ router.post('/:badge_id/icon', async (req, res) => {
         }
     } catch (e) {
         res.status(500).json({reason: e})
+    }
+})
+
+router.get('/collect', async (req, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.body.id,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/icon', async (req, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findFirst({
+            where: {
+                user_id: req.body.id,
+                is_icon: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/choice', async (req, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.body.id,
+                is_choice: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.post('/add', async (req, res) => {
+    const badges = req.body.badge_ids
+    try {
+        const dataList = badges.map((id:string) => ({
+            user_id: req.body.user_id,
+            badge_id: id,
+        }));
+
+        await prisma.collect.createMany({
+            data: dataList,
+            skipDuplicates: true,
+        });
+        res.status(200).json({
+            message: '新しいバッジを獲得しました！'
+        })
+    } catch (e) {
+        return res.status(500).json({reason: e})
     }
 })
 
