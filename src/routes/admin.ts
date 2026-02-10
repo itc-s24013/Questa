@@ -1,18 +1,18 @@
 import {NextFunction, Router} from 'express'
 import prisma from "../libs/db.js";
-import app from "../app.js";
 import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
-app.use(authCheck, (req: AuthRequest, res: any, next: NextFunction) => {
+router.use(authCheck,async (req: AuthRequest, res: any, next: NextFunction) => {
+    console.log("ミドルウェアが呼ばれました")
     if (!req.user?.id) {
         res.status(401).json({reason: "認証に失敗しました。"})
         return
     }
     try {
-        const user = prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 id: req.user.id,
                 is_deleted: false,
