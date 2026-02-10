@@ -1,13 +1,15 @@
 import {Router} from 'express'
 import prisma from "../libs/db.js";
-
+import {authCheck} from "../middleware/auth.js";
+import {AuthRequest} from "../types/express.js";
 export const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authCheck, async (req:AuthRequest,res) => {
     try {
         const user = await prisma.user.findFirst({
             where: {
-                is_deleted: false
+                is_deleted: false,
+                id: req.user?.id
             }
         })
         if (!user) {
@@ -25,7 +27,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-router.post("/judge", async (req, res) => {
+router.post("/judge", authCheck, async (req:AuthRequest, res) => {
     const choice = req.body.choice
     try {
         const getQuest = await prisma.quest.findUnique({
@@ -43,7 +45,7 @@ router.post("/judge", async (req, res) => {
             try {
                 const is_clear = await prisma.clear.findFirst({
                     where: {
-                        user_id: req.user,
+                        user_id: req.user?.id,
                         quest_id: req.body.quest_id
                     }
                 })
@@ -54,7 +56,7 @@ router.post("/judge", async (req, res) => {
                 try {
                     const user = await prisma.user.update({
                         where: {
-                            id: req.body.id,
+                            id: req.user?.id,
                             is_deleted: false
                         },
                         data: {
@@ -67,7 +69,7 @@ router.post("/judge", async (req, res) => {
                         try {
                             await prisma.clear.create({
                                 data: {
-                                    user_id: req.body.user_id,
+                                    user_id: req.user?.id as string,
                                     quest_id: req.body.quest_id
                                 }
                             })
@@ -93,18 +95,18 @@ router.post("/judge", async (req, res) => {
     }
 })
 
-router.post("/sameBadge", async (req, res) => {
+router.post("/sameBadge", authCheck, async (req:AuthRequest, res) => {
         try {
             const sameBadgeJudge = await prisma.collect.findFirst({
                 where: {
-                    user_id: req.body.user,
+                    user_id: req.user?.id,
                     badge_id: req.body.badge_id
                 }
             })
             if (sameBadgeJudge) {
                 await prisma.user.update({
                     where: {
-                        id: req.body.user,
+                        id: req.user?.id,
                         is_deleted: false
                     },
                     data: {
@@ -126,7 +128,7 @@ router.post("/sameBadge", async (req, res) => {
         }
 })
 
-router.post("/sameBadges", async (req, res) => {
+router.post("/sameBadges", authCheck, async (req:AuthRequest, res) => {
     const badgeIds: string[] = req.body.badge_ids
     let count:number = 0
     let searchSameBadges:string[] = []
@@ -141,7 +143,7 @@ router.post("/sameBadges", async (req, res) => {
     try {
         const sameBadges = await prisma.collect.findMany({
             where: {
-                user_id: req.body.user,
+                user_id: req.user?.id,
                 badge_id: {
                     in: badgeIds
                 }
@@ -151,7 +153,7 @@ router.post("/sameBadges", async (req, res) => {
             try {
                 await prisma.user.update({
                     where: {
-                        id: req.body.user,
+                        id: req.user?.id,
                         is_deleted: false
                     },
                     data: {
@@ -167,6 +169,27 @@ router.post("/sameBadges", async (req, res) => {
                 res.json({reason: e})
             }
         }
+    } catch (e) {
+        res.json({reason: e})
+    }
+})
+
+router.post('/reduce/:point', async (req, res) => {
+    try {
+         await prisma.user.update({
+            where: {
+                id: req.body.user,
+                is_deleted: false
+            },
+            data: {
+                my_point: {
+                    decrement: Number(req.params.point)
+                }
+            }
+        })
+        res.status(200).json({
+            message: 'ポイントを減らしました',
+        })
     } catch (e) {
         res.json({reason: e})
     }
