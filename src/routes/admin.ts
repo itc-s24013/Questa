@@ -3,22 +3,6 @@ import prisma from "../libs/db.js";
 
 export const router = Router();
 
-router.use(async (req, res, next) => {
-    // ログイン中かどうかをチェックするミドルウェア
-    if (!req.isAuthenticated()) {
-        return res.status(400).json({
-            reason: 'ログインをしてください'
-        })
-    }
-
-    if (req.body.is_adimin !== true) {
-        return res.status(403).json({
-            reason: '管理者権限がありません'
-        })
-    }
-    next() // ログイン中なので次の処理へ
-})
-
 router.get('/user', async (req, res) => {
     try {
         res.status(200).json({
