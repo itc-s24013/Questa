@@ -32,8 +32,7 @@ router.get("/", async (req, res) => {
         } catch (e) {
             res.json({reason: e})
         }
-    }
-)
+    })
 
 router.get("/:id", async (req, res) => {
     try {
