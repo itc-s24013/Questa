@@ -1,7 +1,33 @@
-import {Router} from 'express'
+import {NextFunction, Router} from 'express'
 import prisma from "../libs/db.js";
+import app from "../app.js";
+import {authCheck} from "../middleware/auth.js";
+import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
+
+app.use(authCheck, (req: AuthRequest, res: any, next: NextFunction) => {
+    if (!req.user?.id) {
+        res.status(401).json({reason: "認証に失敗しました。"})
+        return
+    }
+    try {
+        const user = prisma.user.findUnique({
+            where: {
+                id: req.user.id,
+                is_deleted: false,
+                is_admin: true
+            }
+        })
+        if (!user) {
+            res.status(403).json({reason: "管理者権限がありません。"})
+            return
+        }
+        next()
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
 
 router.get('/user', async (req, res) => {
     try {
@@ -35,13 +61,13 @@ router.delete('/user/:id', async (req, res) => {
 
 router.get('/quest', async (req, res) => {
     try {
-        res.status(200).json({
-            users: await prisma.quest.findMany({
+        res.status(200).json(
+            await prisma.quest.findMany({
                 where: {
                     is_deleted: false,
                 }
             })
-        })
+        )
     } catch (e) {
         res.status(500).json({reason: e})
     }
