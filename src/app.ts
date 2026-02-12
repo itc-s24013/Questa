@@ -26,7 +26,10 @@ import supabase from "./libs/supabase.js";
 const app = express()
 
 // ミドルウェア設定
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true, // フロントエンドのURLを指定
+}));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())

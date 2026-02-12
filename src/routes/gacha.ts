@@ -4,7 +4,7 @@ import {authCheck} from "../middleware/auth.js";
 
 export const router = Router();
 
-router.get('/:count',authCheck, async (req, res) => {
+router.get('/:count', async (req, res) => {
     const randoms = Array.from({length: Number(req.params.count)}, () => Math.floor(Math.random() * 100));
     const probabilities = randoms.map(random => {
         if (random < 40) return 1;
