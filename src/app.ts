@@ -101,11 +101,6 @@ app.get('/', (req: Request, res: Response) => {
     res.sendFile(path.resolve('views/index.html'));
 });
 
-// 新規登録画面
-app.get('/signup', (req, res) => {
-    res.sendFile(path.resolve('views/signup.html'));
-});
-
 
 // ルーティング
 app.use('/auth', authRouter)

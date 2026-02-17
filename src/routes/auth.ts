@@ -80,7 +80,20 @@ router.post("/verify", async (req, res) => {
         return res.status(400).json({ error: errorMessage });
     }
 
-    // 検証成功
+    try {
+        const accessToken = data.session?.access_token;
+        if (accessToken) {
+            res.cookie('access_token', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 1000 * 60 * 60 * 24, // 1日
+            });
+        }
+    } catch (e) {
+        console.error('cookie set error', e);
+    }
+
     res.status(200).json({ message: "認証に成功しました！", session: data.session });
 });
 
