@@ -30,7 +30,7 @@ router.get('/:badge_id',authCheck, async (req:AuthRequest, res) => {
         const has_badge = await prisma.collect.findFirst({
             where: {
                 user_id: req.user?.id,
-                badge_id: req.params.badge_id
+                badge_id: String(req.params.badge_id)
             }
         })
         if (!has_badge) {
@@ -61,7 +61,7 @@ router.post('/:badge_id/choice',authCheck, async (req:AuthRequest, res) => {
             const has_badge = await prisma.collect.findFirst({
                 where: {
                     user_id: req.user?.id,
-                    badge_id: req.params.badge_id
+                    badge_id: String(req.params.badge_id)
                 }
             })
             if (!has_badge) {
@@ -103,7 +103,7 @@ router.post('/:badge_id/icon',authCheck, async (req:AuthRequest, res) => {
             const has_badge = await prisma.collect.findFirst({
                 where: {
                     user_id: req.user?.id,
-                    badge_id: req.params.badge_id
+                    badge_id: String(req.params.badge_id)
                 }
             })
             if (!has_badge) {

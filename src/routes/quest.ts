@@ -40,7 +40,7 @@ router.get("/:id",authCheck, async (req:AuthRequest, res) => {
     try {
         const quest = await prisma.quest.findUnique({
             where: {
-                id: req.params.id,
+                id: String(req.params.id),
                 is_deleted: false
             }
         })
@@ -51,7 +51,7 @@ router.get("/:id",authCheck, async (req:AuthRequest, res) => {
             const cleared_quest = await prisma.clear.findFirst({
                 where: {
                     user_id: req.user?.id,
-                    quest_id: req.params.id
+                    quest_id: String(req.params.id)
                 }
             })
 
