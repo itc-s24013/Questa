@@ -5,8 +5,8 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
-router.use(authCheck,async (req: AuthRequest, res: any, next: NextFunction) => {
-    console.log("ミドルウェアが呼ばれました")
+// 管理者権限チェック
+router.get('/', async (req: AuthRequest, res) => {
     if (!req.user?.id) {
         res.status(401).json({reason: "認証に失敗しました。"})
         return
@@ -20,15 +20,16 @@ router.use(authCheck,async (req: AuthRequest, res: any, next: NextFunction) => {
             }
         })
         if (!user) {
-            res.status(403).json({reason: "管理者権限がありません。"})
+            res.status(403).json({is_admin: false, message: "一般ユーザーです。"})
             return
         }
-        next()
+        res.status(200).json({is_admin: true, message: "管理者ユーザーです。"})
     } catch (e) {
         res.status(500).json({reason: e})
     }
 })
 
+// 全ユーザー一覧
 router.get('/user', async (req, res) => {
     try {
         res.status(200).json({
