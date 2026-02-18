@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // データ取得
-            const res = await fetch('/api/userData', {
+            const res = await fetch('/users', {
                 method: 'GET',
                 credentials: 'same-origin', // クッキーを送信
             });

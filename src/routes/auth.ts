@@ -37,6 +37,24 @@ router.post('/signup', async function (req, res) {
             }
             return res.status(400).json({error: errorMessage + ":" + error.message});
         }
+
+        // signup 後、verify 時にサーバ側でメールアドレスを参照できるように短期の cookie をセット
+        try {
+            const isProd = process.env.NODE_ENV === 'production';
+            const cookieSameSite = isProd ? 'none' : 'lax';
+            const cookieSecure = isProd;
+            // 有効期限は短め（例: 10 分）
+            res.cookie('pending_email', email, {
+                httpOnly: true,
+                secure: cookieSecure,
+                sameSite: cookieSameSite as any,
+                path: '/auth/verify',
+                maxAge: 10 * 60 * 1000,
+            });
+        } catch (e) {
+            console.error('pending_email cookie set failed', e);
+        }
+
         res.status(200).json({message: 'ワンタイムパスワードを送信しました。メールをご確認ください。'})
     } catch (err) {
         console.error("新規登録エラー:", err);
@@ -46,20 +64,28 @@ router.post('/signup', async function (req, res) {
 
 
 // ワンタイムパスワード入力フォーム　表示エンドポイント
-router.get("/verify", async function (req, res) {
-    const file = path.resolve(process.cwd(), 'views', 'verify.html'); //process.cwd() 通常プロジェクトルートを指す
-    res.sendFile(file);
-})
+// router.get("/verify", async function (req, res) {
+//     const file = path.resolve(process.cwd(), 'views', 'verify.html'); //process.cwd() 通常プロジェクトルートを指す
+//     res.sendFile(file);
+// })
 
 // ワンタイムパスワード入力フォーム送信
 router.post("/verify", async (req, res) => {
-    const {email, token} = req.body; // フロントのフォームから届く
+    // クライアントから email を送らない設計を優先するため、まずは req.body.email を確認し、無ければサーバが set した pending_email cookie を使う
+    let {email, token} = req.body as { email?: string, token?: string };
+    if (!email && req.cookies) {
+        email = req.cookies.pending_email || '';
+    }
 
     // デバッグ用ログ：メールアドレスの前後の空白を確認
     console.log("検証リクエスト受信:", {
         email: `[${email}]`,
         token: token
     });
+
+    if (!email) {
+        return res.status(400).json({ error: 'メールアドレスが特定できません。' });
+    }
 
     const {data, error} = await supabase.auth.verifyOtp({
         email,
@@ -83,12 +109,20 @@ router.post("/verify", async (req, res) => {
     try {
         const accessToken = data.session?.access_token;
         if (accessToken) {
+            const isProd = process.env.NODE_ENV === 'production';
+            const cookieSameSite = isProd ? 'none' : 'lax';
+            const cookieSecure = isProd;
+
             res.cookie('access_token', accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                secure: cookieSecure,
+                sameSite: cookieSameSite as any,
+                path: '/',
                 maxAge: 1000 * 60 * 60 * 24, // 1日
             });
+
+            // 登録プロセスが完了したので pending_email cookie は削除
+            res.clearCookie('pending_email', { path: '/auth/verify' });
         }
     } catch (e) {
         console.error('cookie set error', e);

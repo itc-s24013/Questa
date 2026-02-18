@@ -5,7 +5,7 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
-router.get("/",authCheck, async (req:AuthRequest, res) => {
+router.get("/", async (req:AuthRequest, res) => {
     try {
         const cleared_quests = await prisma.clear.findMany({
             where: {
@@ -36,7 +36,7 @@ router.get("/",authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get("/:id",authCheck, async (req:AuthRequest, res) => {
+router.get("/:id", async (req:AuthRequest, res) => {
     try {
         const quest = await prisma.quest.findUnique({
             where: {
@@ -76,7 +76,7 @@ router.get("/:id",authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get("/cleared",authCheck, async (req:AuthRequest, res) => {
+router.get("/cleared", async (req:AuthRequest, res) => {
     try {
         const cleared = await prisma.clear.findMany({
             where: {

@@ -4,7 +4,7 @@ import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 export const router = Router();
 
-router.get("/", authCheck, async (req:AuthRequest,res) => {
+router.get("/", async (req:AuthRequest,res) => {
     try {
         const user = await prisma.user.findFirst({
             where: {
@@ -27,7 +27,7 @@ router.get("/", authCheck, async (req:AuthRequest,res) => {
     }
 })
 
-router.post("/judge", authCheck, async (req:AuthRequest, res) => {
+router.post("/judge", async (req:AuthRequest, res) => {
     const choice = req.body.choice
     try {
         const getQuest = await prisma.quest.findUnique({
@@ -95,7 +95,7 @@ router.post("/judge", authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.post("/sameBadge", authCheck, async (req:AuthRequest, res) => {
+router.post("/sameBadge", async (req:AuthRequest, res) => {
         try {
             const sameBadgeJudge = await prisma.collect.findFirst({
                 where: {
@@ -128,7 +128,7 @@ router.post("/sameBadge", authCheck, async (req:AuthRequest, res) => {
         }
 })
 
-router.post("/sameBadges", authCheck, async (req:AuthRequest, res) => {
+router.post("/sameBadges", async (req:AuthRequest, res) => {
     const badgeIds: string[] = req.body.badge_ids
     let count:number = 0
     let searchSameBadges:string[] = []
