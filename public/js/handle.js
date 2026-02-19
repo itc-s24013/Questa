@@ -43,10 +43,6 @@ const handlers = {
         const token = otpInput ? otpInput.value : '';
         const msgDiv = document.getElementById('verify-msg');
 
-        // if (!email) {
-        //     msgDiv.innerText = "メールアドレスが必要です";
-        //     return;
-        // }
         if (!token) {
             msgDiv.innerText = "メールに届いた認証コードを入力してください";
             return;
