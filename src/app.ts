@@ -27,7 +27,7 @@ const app = express()
 
 // ミドルウェア設定
 app.use(cors({
-    origin: 'https://questa-front.vercel.app/',
+    origin: 'https://questa-front.vercel.app',
     credentials: true, // フロントエンドのURLを指定
 }));
 app.use(express.json())
