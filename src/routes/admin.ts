@@ -1,6 +1,5 @@
-import {NextFunction, Router} from 'express'
+import {Router} from 'express'
 import prisma from "../libs/db.js";
-import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 
 export const router = Router();

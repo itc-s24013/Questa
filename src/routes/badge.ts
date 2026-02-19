@@ -1,6 +1,5 @@
 import  {Router} from 'express'
 import prisma from "../libs/db.js";
-import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
@@ -21,6 +20,68 @@ router.get('/', async (req:AuthRequest, res) => {
                 }
             })
         )
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/choice', async (req:AuthRequest, res) => {
+    try {
+        const result = await prisma.collect.findMany({
+            where: {
+                user_id: req.user?.id,
+                is_choice: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        })
+        res.status(200).json({
+            id: result.map(r => r.badge_id),
+            name: result.map(r => r.badge.name),
+            badge_image_url: result.map(r => r.badge.badge_image_url),
+            rarity: result.map(r => r.badge.rarity),
+        })
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/icon', async (req:AuthRequest, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findFirst({
+            where: {
+                user_id: req.user?.id,
+                is_icon: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/collect', async (req:AuthRequest, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.user?.id,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
     } catch (e) {
         res.status(500).json({reason: e})
     }

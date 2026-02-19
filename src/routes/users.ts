@@ -1,4 +1,4 @@
-import {Router, Request} from 'express'
+import {Router} from 'express'
 import supabase from "../libs/supabase.js";
 import {AuthRequest} from '../types/express.js';
 
