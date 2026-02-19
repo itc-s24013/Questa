@@ -157,7 +157,7 @@ router.post("/sameBadges", async (req:AuthRequest, res) => {
                     },
                     data: {
                         my_point: {
-                            decrement: sameBadges.length + count
+                            increment: sameBadges.length + count
                         }
                     }
                 })
