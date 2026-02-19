@@ -1,6 +1,5 @@
 import {Router} from 'express'
 import prisma from "../libs/db.js";
-import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 export const router = Router();
 
@@ -54,7 +53,7 @@ router.post("/judge", async (req:AuthRequest, res) => {
                      cleared_point = 10
                 }
                 try {
-                    const user = await prisma.user.update({
+                    await prisma.user.update({
                         where: {
                             id: req.user?.id,
                             is_deleted: false
@@ -78,7 +77,7 @@ router.post("/judge", async (req:AuthRequest, res) => {
                         }
                     }
                     res.status(200).json({
-                        point: user.my_point
+                        message: "正解！ポイントを獲得しました！",
                     })
                 } catch (e) {
                     res.json({reason: e})
