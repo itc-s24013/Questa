@@ -127,68 +127,82 @@ router.post("/sameBadge", async (req:AuthRequest, res) => {
         }
 })
 
-router.post("/sameBadges", async (req:AuthRequest, res) => {
-    const badgeIds: string[] = req.body.badge_ids
-    let count:number = 0
-    let searchSameBadges:string[] = []
-    for (const badge of badgeIds) {
-        if(searchSameBadges.includes(badge)) {
-            count += 1
-            continue
-        }
-        searchSameBadges.push(badge)
-    }
+router.post("/sameBadges", async (req: AuthRequest, res) => {
+    const badgeIds: string[] = req.body.badge_ids; // ガチャで出た全ID
+    const userId = req.user?.id;
 
     try {
         const sameBadges = await prisma.collect.findMany({
             where: {
-                user_id: req.user?.id,
-                badge_id: {
-                    in: badgeIds
-                }
+                user_id: userId,
+                badge_id: { in: badgeIds }
             }
-        })
-        if (sameBadges) {
-            try {
-                await prisma.user.update({
-                    where: {
-                        id: req.user?.id,
-                        is_deleted: false
-                    },
-                    data: {
-                        my_point: {
-                            increment: sameBadges.length + count
-                        }
-                    }
-                })
-                res.status(200).json({
-                    message: "被ったバッジはポイントに変換しました"
-                })
-            } catch (e) {
-                res.json({reason: e})
+        });
+        const existingBadgeIds = sameBadges.map(c => c.badge_id);
+
+        let duplicateCount = 0;
+        const tempInventory = [...existingBadgeIds]; // シュミレーション用の所持リスト
+
+        for (const id of badgeIds) {
+            if (tempInventory.includes(id)) {
+                duplicateCount += 1;
+            } else {
+                tempInventory.push(id);
             }
         }
-    } catch (e) {
-        res.json({reason: e})
-    }
-})
 
-router.post('/reduce/:point', async (req, res) => {
-    try {
-         await prisma.user.update({
-            where: {
-                id: req.body.user,
-                is_deleted: false
-            },
-            data: {
-                my_point: {
-                    decrement: Number(req.params.point)
+        if (duplicateCount > 0) {
+            await prisma.user.update({
+                where: { id: userId, is_deleted: false },
+                data: {
+                    my_point: { increment: duplicateCount }
                 }
+            });
+            return res.status(200).json({
+                message: `${duplicateCount}個のバッジをポイントに変換しました`
+            });
+        }
+
+        return res.status(200).json({ message: "新規バッジのみでした" });
+
+    } catch (e) {
+        console.error(e);
+        if (!res.headersSent) {
+            return res.status(500).json({ reason: e });
+        }
+    }
+});
+
+router.post('/reduce/:point', async (req:AuthRequest, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: req.user?.id,
+                is_deleted: false
             }
         })
-        res.status(200).json({
-            message: 'ポイントを減らしました',
-        })
+        if(!user) {
+            return res.status(404).json({reason: 'ユーザーが見つかりません'})
+        }
+        if (user.my_point < Number(req.params.point)) {
+            return res.status(200).json({reason: 'ポイントが不足しています'})
+        }
+        try {
+            await prisma.user.update({
+                where: {
+                    id: req.user?.id,
+                    is_deleted: false
+                },
+                data: {
+                    my_point: {
+                        decrement: Number(req.params.point)
+                    }
+                }
+            })
+            res.status(200).json({message: 'ポイントを減らしました',})
+        } catch (e) {
+            res.json({reason: e})
+        }
     } catch (e) {
         res.json({reason: e})
     }
