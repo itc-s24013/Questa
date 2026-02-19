@@ -33,27 +33,4 @@ router.get('/', async (req: AuthRequest, res) => {
     }
 })
 
-router.get('/:id', async (req: AuthRequest, res) => {
-    try {
-        const {data, error} = await supabase
-            .schema('public') // スキーマを明示的に指定
-            .from('User')
-            .select('*')
-            .eq('id', String(req.params.id))
-            .single();
-        if (error) {
-            console.error('[/users/:id] supabase error:', error);
-            return res.status(500).json({reason: error.message || 'ユーザーデータの取得に失敗しました'});
-        }
-
-        if (!data) {
-            console.error('[/users/:id] no data for id:', req.params.id);
-            return res.status(404).json({reason: 'ユーザーデータが見つかりません'});
-        }
-        return res.status(200).json(data);
-    } catch (e) {
-        return res.status(500).json({reason: e})
-    }
-})
-
 export default router;
