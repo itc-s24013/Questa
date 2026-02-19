@@ -72,7 +72,7 @@ router.get('/icon', async (req:AuthRequest, res) => {
 // 所有しているバッジの全情報を返す
 router.get('/collect', async (req:AuthRequest, res) => {
     try {
-        res.status(200).json(await prisma.collect.findMany({
+        return res.status(200).json(await prisma.collect.findMany({
             where: {
                 user_id: req.user?.id,
                 badge: {
@@ -84,7 +84,7 @@ router.get('/collect', async (req:AuthRequest, res) => {
             }
         }))
     } catch (e) {
-        res.status(500).json({reason: e})
+        return res.status(500).json({reason: e})
     }
 })
 
