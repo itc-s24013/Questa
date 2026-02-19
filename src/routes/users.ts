@@ -15,7 +15,7 @@ router.get('/', async (req: AuthRequest, res) => {
         const {data, error} = await supabase
             .schema('public') // スキーマを明示的に指定
             .from('User')
-            .select('name, my_point')
+            .select('id,name,email')
             .eq('id', id)
             .single();
         if (error) {
