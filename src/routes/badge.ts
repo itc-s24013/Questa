@@ -5,7 +5,7 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
-router.get('/',authCheck, async (req:AuthRequest, res) => {
+router.get('/', async (req:AuthRequest, res) => {
     try {
         const has_badges = await prisma.collect.findMany({
             where: {
@@ -25,7 +25,7 @@ router.get('/',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get('/:badge_id',authCheck, async (req:AuthRequest, res) => {
+router.get('/:badge_id', async (req:AuthRequest, res) => {
     try {
         const has_badge = await prisma.collect.findFirst({
             where: {
@@ -49,7 +49,7 @@ router.get('/:badge_id',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.post('/:badge_id/choice',authCheck, async (req:AuthRequest, res) => {
+router.post('/:badge_id/choice', async (req:AuthRequest, res) => {
     try {
         const choice_badge = await prisma.collect.findMany({
             where: {
@@ -91,7 +91,7 @@ router.post('/:badge_id/choice',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.post('/:badge_id/icon',authCheck, async (req:AuthRequest, res) => {
+router.post('/:badge_id/icon', async (req:AuthRequest, res) => {
     try {
         const icon_badge = await prisma.collect.findMany({
             where: {
@@ -133,7 +133,7 @@ router.post('/:badge_id/icon',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get('/collect',authCheck, async (req:AuthRequest, res) => {
+router.get('/collect', async (req:AuthRequest, res) => {
     try {
         res.status(200).json(await prisma.collect.findMany({
             where: {
@@ -151,7 +151,7 @@ router.get('/collect',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get('/icon',authCheck, async (req:AuthRequest, res) => {
+router.get('/icon', async (req:AuthRequest, res) => {
     try {
         res.status(200).json(await prisma.collect.findFirst({
             where: {
@@ -170,7 +170,7 @@ router.get('/icon',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.get('/choice',authCheck, async (req:AuthRequest, res) => {
+router.get('/choice', async (req:AuthRequest, res) => {
     try {
         res.status(200).json(await prisma.collect.findMany({
             where: {
@@ -189,7 +189,7 @@ router.get('/choice',authCheck, async (req:AuthRequest, res) => {
     }
 })
 
-router.post('/add',authCheck, async (req:AuthRequest, res) => {
+router.post('/add', async (req:AuthRequest, res) => {
     const badges = req.body.badge_ids
     try {
         const dataList = badges.map((id:string) => ({

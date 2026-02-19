@@ -11,15 +11,14 @@ export const authCheck = async (
 ) => {
     const authHeader = req.header('authorization');
     const tokenFromHeader = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : undefined;
-    const token = tokenFromHeader || (req as any).cookies?.access_token;
+    const token = tokenFromHeader || req.cookies?.access_token;
 
     // トークンがない場合
-    if (!token) return res.status(401).redirect('/auth/login');
+    if (!token) return res.status(401).json({ reason: "認証トークンがありません" });
 
     const { data, error } = await supabase.auth.getUser(token)
     if (error || !data.user) {
-        res.clearCookie('access_token'); // 無効なトークンの場合、クッキーをクリア
-        return res.status(401).redirect('/auth/login');
+        return res.status(401).json({ reason: "無効な認証トークンです" });
     }
 
     req.user = data.user

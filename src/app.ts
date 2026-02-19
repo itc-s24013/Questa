@@ -13,7 +13,7 @@ import cors from 'cors';
 import { authCheck } from './middleware/auth.js'
 import indexRouter from './routes/index.js'
 import authRouter from './routes/auth.js'
-import apiRoutes from './routes/api/userData.js'
+// import apiRoutes from './routes/api/userData.js'
 import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
 import adminRouter from './routes/admin.js'
@@ -24,10 +24,15 @@ import supabase from "./libs/supabase.js";
 // import {VerifyOtpParams} from "@supabase/supabase-js";
 
 const app = express()
+const origins = [
+    'https://questa-front.vercel.app', // 本番フロント
+    'https://questa-front-ogx6xbuja-s24006s-projects.vercel.app', // プレビュー環境フロント
+    'http://localhost:3001',           // 開発用フロント
+];
 
 // ミドルウェア設定
 app.use(cors({
-    origin: 'https://questa-front.vercel.app',
+    origin: origins,
     credentials: true, // フロントエンドのURLを指定
 }));
 app.use(express.json())
@@ -72,13 +77,13 @@ app.use((req, res, next) => {
 
 // 静的ファイル
 // app.use(express.static(path.join(path.dirname(''), 'public')));
-app.use(express.static('public'))
-app.set('public', path.join(path.dirname(''), 'public'));
-
-// views設定
-app.use(express.static('views'))
-app.set('views', path.join(path.dirname(''), 'views'))
-app.set('view engine', 'ejs')
+// app.use(express.static('public'))
+// app.set('public', path.join(path.dirname(''), 'public'));
+//
+// // views設定
+// app.use(express.static('views'))
+// app.set('views', path.join(path.dirname(''), 'views'))
+// app.set('view engine', 'ejs')
 
 // データベース接続確認用エンドポイント
 app.get('/health', async (_req, res) => {
@@ -104,13 +109,13 @@ app.get('/', (req: Request, res: Response) => {
 
 // ルーティング
 app.use('/auth', authRouter)
-app.use('/api/userData', apiRoutes)
-app.use('/users', usersRouter)
-app.use('/quest', questRouter)
-app.use('/admin', adminRouter)
-app.use('/point', pointRouter)
-app.use('/badge', badgeRouter)
-app.use('/gacha', gachaRouter)
+// app.use('/api/userData', authCheck, apiRoutes)
+app.use('/users', authCheck, usersRouter)
+app.use('/quest', authCheck, questRouter)
+app.use('/admin', authCheck, adminRouter)
+app.use('/point', authCheck, pointRouter)
+app.use('/badge', authCheck, badgeRouter)
+app.use('/gacha', authCheck, gachaRouter)
 app.use('/', indexRouter)
 
 
