@@ -5,6 +5,7 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
+// 所有してるbadge_idだけ返す
 router.get('/', async (req:AuthRequest, res) => {
     try {
         const has_badges = await prisma.collect.findMany({
@@ -133,6 +134,7 @@ router.post('/:badge_id/icon', async (req:AuthRequest, res) => {
     }
 })
 
+// 所有しているバッジの全情報を返す
 router.get('/collect', async (req:AuthRequest, res) => {
     try {
         res.status(200).json(await prisma.collect.findMany({
