@@ -27,11 +27,17 @@ router.get("/", async (req:AuthRequest,res) => {
 })
 
 router.post("/judge", async (req:AuthRequest, res) => {
-    const choice = req.body.choice
+    const user_id = req.user?.id
+    const { quest_id, choice } = req.body
+
+    if (!quest_id) {
+        return res.status(400).json({ reason: "quest_id が必要です" });
+    }
+
     try {
         const getQuest = await prisma.quest.findUnique({
             where: {
-                id: req.body.quest_id
+                id: quest_id
             }
         })
         if (!getQuest) {
@@ -42,10 +48,11 @@ router.post("/judge", async (req:AuthRequest, res) => {
         }
         if (choice === getQuest.choice4) {
             try {
+                // すでにクリアしているか確認
                 const is_clear = await prisma.clear.findFirst({
                     where: {
-                        user_id: req.user?.id,
-                        quest_id: req.body.quest_id
+                        user_id,
+                        quest_id
                     }
                 })
                 let cleared_point = null
@@ -55,7 +62,7 @@ router.post("/judge", async (req:AuthRequest, res) => {
                 try {
                     await prisma.user.update({
                         where: {
-                            id: req.user?.id,
+                            id: user_id,
                             is_deleted: false
                         },
                         data: {
@@ -68,8 +75,8 @@ router.post("/judge", async (req:AuthRequest, res) => {
                         try {
                             await prisma.clear.create({
                                 data: {
-                                    user_id: req.user?.id as string,
-                                    quest_id: req.body.quest_id
+                                    user_id: user_id || '',
+                                    quest_id
                                 }
                             })
                         } catch (e) {
