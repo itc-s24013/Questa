@@ -4,6 +4,7 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
+// 未クリアのクエスト
 router.get("/", async (req:AuthRequest, res) => {
     try {
         const cleared_quests = await prisma.clear.findMany({

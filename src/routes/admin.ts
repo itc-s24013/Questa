@@ -1,6 +1,5 @@
-import {NextFunction, Router} from 'express'
+import {Router} from 'express'
 import prisma from "../libs/db.js";
-import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
@@ -20,10 +19,10 @@ router.get('/', async (req: AuthRequest, res) => {
             }
         })
         if (!user) {
-            res.status(403).json({is_admin: false, message: "一般ユーザーです。"})
+            res.status(200).json({is_admin: false})
             return
         }
-        res.status(200).json({is_admin: true, message: "管理者ユーザーです。"})
+        res.status(200).json({is_admin: true})
     } catch (e) {
         res.status(500).json({reason: e})
     }

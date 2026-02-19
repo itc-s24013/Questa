@@ -4,6 +4,7 @@ import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
 
+// 所有してるbadge_idだけ返す
 router.get('/', async (req:AuthRequest, res) => {
     try {
         const has_badges = await prisma.collect.findMany({
@@ -189,6 +190,63 @@ router.post('/:badge_id/icon', async (req:AuthRequest, res) => {
         } catch (e) {
             res.status(500).json({reason: e})
         }
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+// 所有しているバッジの全情報を返す
+router.get('/collect', async (req:AuthRequest, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.user?.id,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/icon', async (req:AuthRequest, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findFirst({
+            where: {
+                user_id: req.user?.id,
+                is_icon: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
+    } catch (e) {
+        res.status(500).json({reason: e})
+    }
+})
+
+router.get('/choice', async (req:AuthRequest, res) => {
+    try {
+        res.status(200).json(await prisma.collect.findMany({
+            where: {
+                user_id: req.user?.id,
+                is_choice: true,
+                badge: {
+                    is_deleted: false
+                }
+            },
+            include: {
+                badge: true
+            }
+        }))
     } catch (e) {
         res.status(500).json({reason: e})
     }
