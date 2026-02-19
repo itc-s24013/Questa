@@ -128,48 +128,39 @@ router.post("/sameBadge", async (req:AuthRequest, res) => {
 })
 
 router.post("/sameBadges", async (req: AuthRequest, res) => {
-    const badgeIds: string[] = req.body.badge_ids; // ガチャで出た全ID
+    const badgeIds: string[] = req.body.badge_ids;
     const userId = req.user?.id;
 
     try {
-        const sameBadges = await prisma.collect.findMany({
-            where: {
-                user_id: userId,
-                badge_id: { in: badgeIds }
-            }
+        // 1. DBから現在の所持状況を取得
+        const existingCollects = await prisma.collect.findMany({
+            where: { user_id: userId, badge_id: { in: badgeIds } }
         });
-        const existingBadgeIds = sameBadges.map(c => c.badge_id);
+        const ownedIds = new Set(existingCollects.map(c => c.badge_id));
 
-        let duplicateCount = 0;
-        const tempInventory = [...existingBadgeIds]; // シュミレーション用の所持リスト
+        // 2. 「重複分」を厳密に計算
+        let totalRefund = 0;
+        const seenThisTime = new Set<string>();
 
         for (const id of badgeIds) {
-            if (tempInventory.includes(id)) {
-                duplicateCount += 1;
+            // 「既にDBにある」 or 「この10連の中で既に1枚目が出た」
+            if (ownedIds.has(id) || seenThisTime.has(id)) {
+                totalRefund += 1; // 1pt還元
             } else {
-                tempInventory.push(id);
+                seenThisTime.add(id); // 1枚目なのでキープ（ポイントにしない）
             }
         }
 
-        if (duplicateCount > 0) {
+        if (totalRefund > 0) {
             await prisma.user.update({
                 where: { id: userId, is_deleted: false },
-                data: {
-                    my_point: { increment: duplicateCount }
-                }
-            });
-            return res.status(200).json({
-                message: `${duplicateCount}個のバッジをポイントに変換しました`
+                data: { my_point: { increment: totalRefund } }
             });
         }
 
-        return res.status(200).json({ message: "新規バッジのみでした" });
-
+        return res.status(200).json({ refund: totalRefund });
     } catch (e) {
-        console.error(e);
-        if (!res.headersSent) {
-            return res.status(500).json({ reason: e });
-        }
+        return res.status(500).json({ reason: e });
     }
 });
 
@@ -199,12 +190,12 @@ router.post('/reduce/:point', async (req:AuthRequest, res) => {
                     }
                 }
             })
-            res.status(200).json({message: 'ポイントを減らしました',})
+            return res.status(200).json({message: 'ポイントを減らしました',})
         } catch (e) {
-            res.json({reason: e})
+            return res.json({reason: e})
         }
     } catch (e) {
-        res.json({reason: e})
+        return res.json({reason: e})
     }
 })
 

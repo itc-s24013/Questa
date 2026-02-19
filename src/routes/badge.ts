@@ -146,11 +146,13 @@ router.post('/add', async (req:AuthRequest, res) => {
             }
         })
 
-        await prisma.collect.createMany({
-            data: dataList.filter((data: { user_id: string, badge_id: string }) =>
-                !collects.some(collect => collect.badge_id === data.badge_id)
-            )
-        });
+        if (collects.length > 0) {
+            await prisma.collect.createMany({
+                data: dataList.filter((data: { user_id: string, badge_id: string }) =>
+                    !collects.some(collect => collect.badge_id === data.badge_id)
+                )
+            });
+        }
 
         res.status(200).json({
             message: '新しいバッジを獲得しました！'
