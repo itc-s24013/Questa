@@ -1,7 +1,5 @@
 import {Router} from 'express';
-import path from 'path';
 import supabase from '../libs/supabase.js'
-import {EmailOtpType} from "@supabase/supabase-js";
 
 export const router = Router();
 
@@ -14,7 +12,6 @@ router.post('/signup', async function (req, res) {
             email,
             password,
             options: {
-                // emailRedirectTo: 'https://example.com/welcome',
                 data: {name}
             },
         })
@@ -42,11 +39,10 @@ router.post('/signup', async function (req, res) {
         try {
             const isProd = process.env.NODE_ENV === 'production';
             const cookieSameSite = isProd ? 'none' : 'lax';
-            const cookieSecure = isProd;
             // 有効期限は短め（例: 10 分）
             res.cookie('pending_email', email, {
                 httpOnly: true,
-                secure: cookieSecure,
+                secure: isProd,
                 sameSite: cookieSameSite as any,
                 path: '/auth/verify',
                 maxAge: 10 * 60 * 1000,
@@ -62,12 +58,6 @@ router.post('/signup', async function (req, res) {
     }
 })
 
-
-// ワンタイムパスワード入力フォーム　表示エンドポイント
-// router.get("/verify", async function (req, res) {
-//     const file = path.resolve(process.cwd(), 'views', 'verify.html'); //process.cwd() 通常プロジェクトルートを指す
-//     res.sendFile(file);
-// })
 
 // ワンタイムパスワード入力フォーム送信
 router.post("/verify", async (req, res) => {
@@ -87,9 +77,14 @@ router.post("/verify", async (req, res) => {
         return res.status(400).json({ error: 'メールアドレスが特定できません。' });
     }
 
+    // token が未提供の場合は早期にエラーを返し、verifyOtp に undefined を渡さないようにする
+    if (!token) {
+        return res.status(400).json({ error: 'メールに届いたコードを入力してください。' });
+    }
+
     const {data, error} = await supabase.auth.verifyOtp({
         email,
-        token,       // ユーザーが入力した8桁
+        token: token!,       // token の存在を上で保証しているので non-null アサーション
         type: 'signup'
     });
 
@@ -111,11 +106,10 @@ router.post("/verify", async (req, res) => {
         if (accessToken) {
             const isProd = process.env.NODE_ENV === 'production';
             const cookieSameSite = isProd ? 'none' : 'lax';
-            const cookieSecure = isProd;
 
             res.cookie('access_token', accessToken, {
                 httpOnly: true,
-                secure: cookieSecure,
+                secure: isProd,
                 sameSite: cookieSameSite as any,
                 path: '/',
                 maxAge: 1000 * 60 * 60 * 24, // 1日
@@ -194,7 +188,6 @@ router.post('/login', async function (req, res) {
 })
 
 // トークン再発行エンドポイント
-// routes/auth.ts
 router.post('/refresh', async (req, res) => {
     const refreshToken = req.cookies.refresh_token;
 

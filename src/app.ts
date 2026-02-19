@@ -13,7 +13,6 @@ import cors from 'cors';
 import { authCheck } from './middleware/auth.js'
 import indexRouter from './routes/index.js'
 import authRouter from './routes/auth.js'
-// import apiRoutes from './routes/api/userData.js'
 import usersRouter from './routes/users.js'
 import questRouter from './routes/quest.js'
 import adminRouter from './routes/admin.js'
@@ -75,31 +74,17 @@ app.use((req, res, next) => {
     next();
 })
 
-// 静的ファイル
-// app.use(express.static(path.join(path.dirname(''), 'public')));
-// app.use(express.static('public'))
-// app.set('public', path.join(path.dirname(''), 'public'));
-//
-// // views設定
-// app.use(express.static('views'))
-// app.set('views', path.join(path.dirname(''), 'views'))
-// app.set('view engine', 'ejs')
 
 // データベース接続確認用エンドポイント
 app.get('/health', async (_req, res) => {
-    const { data, error } = await supabase
-        .from('auth.users')
-        .select('id')
-        .limit(1)
-
-    if (error) {
-        console.error(error)
-        return res.status(500).json({ ok: false, error: error.message })
+    // 簡易的な Supabase の疎通確認
+    const r = await supabase.from('auth.users').select('id').limit(1);
+    if (r.error) {
+        console.error('health error', r.error.message);
+        return res.status(500).json({ ok: false, error: r.error.message });
     }
-
-    res.json({ ok: true })
+    res.json({ ok: true });
 })
-
 
 
 app.get('/', (req: Request, res: Response) => {
