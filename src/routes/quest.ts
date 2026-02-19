@@ -1,6 +1,5 @@
 import {Router} from 'express'
 import prisma from "../libs/db.js";
-import {authCheck} from "../middleware/auth.js";
 import {AuthRequest} from "../types/express.js";
 
 export const router = Router();
@@ -27,52 +26,12 @@ router.get("/", async (req:AuthRequest, res) => {
                 point: quest.point
             }))
 
-            res.status(200).json(result)
+            return res.status(200).json(result)
         } catch (e) {
-            res.status(200).json({reason: e})
+            return res.status(200).json({reason: e})
         }
     } catch (e) {
-        res.json({reason: e})
-    }
-})
-
-router.get("/:id", async (req:AuthRequest, res) => {
-    try {
-        const quest = await prisma.quest.findUnique({
-            where: {
-                id: String(req.params.id),
-                is_deleted: false
-            }
-        })
-        if (!quest) {
-            res.status(404).json({reason: "存在しないクエストです。"})
-        }
-        try {
-            const cleared_quest = await prisma.clear.findFirst({
-                where: {
-                    user_id: req.user?.id,
-                    quest_id: String(req.params.id)
-                }
-            })
-
-            if (cleared_quest) {
-                res.status(200).json({
-                    id: quest?.id,
-                    title: quest?.title,
-                    description: quest?.description,
-                    choice1: quest?.choice1,
-                    choice2: quest?.choice2,
-                    choice3: quest?.choice3,
-                    choice4: quest?.choice4,
-                    point: 10
-                })
-            }
-            res.status(200).json(quest)
-        } catch (e) {
-            res.status(200).json({reason: e})
-        }
-    } catch (e) {
-        res.json({reason: e})
+        return res.json({reason: e})
     }
 })
 
@@ -97,12 +56,52 @@ router.get("/cleared", async (req:AuthRequest, res) => {
                 title: quest.title,
                 point: 10
             }))
-            res.status(200).json(result)
+            return res.status(200).json(result)
         } catch (e) {
-            res.json({reason: e})
+            return res.json({reason: e})
         }
     } catch (e) {
-        res.json({reason: e})
+        return res.json({reason: e})
+    }
+})
+
+router.get("/:id", async (req:AuthRequest, res) => {
+    try {
+        const quest = await prisma.quest.findUnique({
+            where: {
+                id: String(req.params.id),
+                is_deleted: false
+            }
+        })
+        if (!quest) {
+            return res.status(404).json({reason: "存在しないクエストです。"})
+        }
+        try {
+            const cleared_quest = await prisma.clear.findFirst({
+                where: {
+                    user_id: req.user?.id,
+                    quest_id: String(req.params.id)
+                }
+            })
+
+            if (cleared_quest) {
+                return res.status(200).json({
+                    id: quest?.id,
+                    title: quest?.title,
+                    description: quest?.description,
+                    choice1: quest?.choice1,
+                    choice2: quest?.choice2,
+                    choice3: quest?.choice3,
+                    choice4: quest?.choice4,
+                    point: 10
+                })
+            }
+            return res.status(200).json(quest)
+        } catch (e) {
+            return res.status(200).json({reason: e})
+        }
+    } catch (e) {
+        return res.json({reason: e})
     }
 })
 
