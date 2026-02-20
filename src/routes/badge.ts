@@ -126,41 +126,48 @@ router.get('/choice', async (req:AuthRequest, res) => {
     }
 })
 
-router.post('/add', async (req:AuthRequest, res) => {
-    const badges = req.body.badge_ids as string[]
-    const uniqueBadges = [...new Set(badges)];
+router.post('/add', async (req: AuthRequest, res) => {
+    const badges = req.body.badge_ids as string[];
     const userId = req.user?.id;
-    if (!userId) {
-        return res.status(401).json({ message: "認証が必要です" });
-    }
+
     try {
-        const dataList =  uniqueBadges.map((id:string) => ({
-            user_id: userId,
-            badge_id: id,
-        }));
+        const existing = await prisma.collect.findMany({
+            where: { user_id: userId, badge_id: { in: badges } }
+        });
+        const ownedIds = new Set(existing.map(c => c.badge_id));
 
-        const collects = await prisma.collect.findMany({
-            where: {
-                user_id: req.user?.id,
-                badge_id: { in: uniqueBadges }
+        const newDataList: any[] = [];
+        let refundCount = 0;
+        const seenInThisGacha = new Set<string>();
+
+        for (const id of badges) {
+            if (ownedIds.has(id) || seenInThisGacha.has(id)) {
+                refundCount++;
+            } else {
+                seenInThisGacha.add(id);
+                newDataList.push({ user_id: userId, badge_id: id });
             }
-        })
+        }
 
-        if (collects.length > 0) {
-            await prisma.collect.createMany({
-                data: dataList.filter((data: { user_id: string, badge_id: string }) =>
-                    !collects.some(collect => collect.badge_id === data.badge_id)
-                )
+        if (newDataList.length > 0) {
+            await prisma.collect.createMany({ data: newDataList });
+        }
+
+        if (refundCount > 0) {
+            await prisma.user.update({
+                where: { id: userId },
+                data: { my_point: { increment: refundCount } }
             });
         }
 
         res.status(200).json({
-            message: '新しいバッジを獲得しました！'
-        })
+            addedCount: newDataList.length,
+            refundCount: refundCount
+        });
     } catch (e) {
-        return res.status(500).json({reason: e})
+        res.status(500).json({ error: e });
     }
-})
+});
 
 router.get('/:badge_id', async (req:AuthRequest, res) => {
     try {
