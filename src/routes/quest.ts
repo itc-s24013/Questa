@@ -106,4 +106,41 @@ router.get("/:id", async (req:AuthRequest, res) => {
     }
 })
 
+// クエストを明示的にクリアする（frontend が使用する想定）
+// router.post('/clear', async (req: AuthRequest, res) => {
+//     const questId = req.body.quest_id
+//     if (!questId) {
+//         return res.status(400).json({ reason: 'quest_id が必要です' })
+//     }
+//
+//     try {
+//         // 既にクリア済みか確認
+//         const existing = await prisma.clear.findFirst({
+//             where: {
+//                 user_id: req.user?.id,
+//                 quest_id: questId
+//             }
+//         })
+//
+//         if (existing) {
+//             // 重複は問題にしない（idempotent）
+//             return res.status(200).json({ message: '既にクリア済みです' })
+//         }
+//
+//         // Clear レコード作成
+//         const created = await prisma.clear.create({
+//             data: {
+//                 user_id: req.user?.id as string,
+//                 quest_id: questId,
+//                 cleared_at: new Date()
+//             }
+//         })
+//
+//         return res.status(201).json({ message: 'クリアを記録しました', clear: created })
+//     } catch (e) {
+//         console.error('/quest/clear error:', e)
+//         return res.status(500).json({ reason: e })
+//     }
+// })
+
 export default router
